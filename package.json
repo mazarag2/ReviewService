@@ -1,0 +1,30 @@
+{
+  "name": "reviewservice",
+  "version": "1.0.0",
+  "description": "microservice for editing,viewing,and deleting reviews\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[Dcreatingv\u001b[D,\u001b[2~v\u001b[3~\u001b[3~\u001b[3~\u001b[3~\u001b[3~iewing, and deleting reviews",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mazarag2/ReviewService.git"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "cors": "^2.8.4",
+    "dotenv": "^6.1.0",
+    "express": "^4.16.4",
+    "firebase": "^5.5.5",
+    "google-auth-library": "^2.0.1",
+    "mocha": "^5.2.0",
+    "pug": "^2.0.3",
+    "puppeteer": "^1.9.0"
+  },
+  "author": "Mike Zaragoza",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mazarag2/ReviewService/issues"
+  },
+  "homepage": "https://github.com/mazarag2/ReviewService#readme"
+}
