@@ -11,14 +11,16 @@ const qstring = require('querystring');
 app.listen(port);
 console.log("server started "+port);
 const dotev = require('dotenv').config();
-
+var http = require('http');
+var util = require('util');
 app.set('view engine', 'jade');
 app.engine('jade', jade.__express);
 app.set('views', path.join(__dirname, '../src/views'));
-
+var multer = require('multer');
+const upload = multer();
 var cors = require('cors');
 app.use(cors());
-
+var fs = require('fs');
 var firebase = require("firebase");
 var config = {
     apiKey: process.env.API_KEY,
@@ -34,15 +36,112 @@ const {OAuth2Client} = require('google-auth-library');
 const client = new OAuth2Client(process.env.LOCAL_CLIENT_ID);
 
 console.log(process.env.LOCAL_CLIENT_ID);
-
+const {google} = require('googleapis');
 const axios = require('axios');
 
+const oauth2Client = new google.auth.OAuth2(
+  process.env.LOCAL_CLIENT_ID,
+  process.env.LOCAL_CLIENT_SECRET,
+  'http://localhost:8080/oauthRedirect'
+);
 
 
 app.get('/home',function(req,res){
 	
 	var local_id = process.env.LOCAL_CLIENT_ID
 	res.render('home',{LOCAL_CLIENT_ID : local_id});
+	
+});
+
+
+app.get('/review',function(req,res){
+	
+	
+	
+	const url = oauth2Client.generateAuthUrl({
+	  // 'online' (default) or 'offline' (gets refresh_token)
+	  access_type: 'offline',
+	  // If you only need one scope you can pass it as a string
+	  scope: 'https://www.googleapis.com/auth/drive',
+	  prompt: 'consent'
+	});
+	console.log(url);
+	res.render('CreateReview',{google_auth_url : url});
+	
+});
+
+
+app.get('/oauthRedirect', async (req,res) => {
+	
+	console.log(req.query.code);
+	var authCode = req.query.code; 
+	const {tokens} = await oauth2Client.getToken(authCode);
+	console.log(tokens);
+	oauth2Client.setCredentials(tokens);
+	res.render('CreateReview');
+	
+});
+
+
+app.get('/authenticate',function(req,res){
+	
+
+
+
+	
+(async () => {	
+	//const client = await OAuth2Client.getClient();
+	oauth2Client.on('tokens',(tokens) =>{
+		
+		console.log(tokens.access_token);
+		res.send(tokens.access_token);
+	})
+	
+})();
+	
+});
+
+app.post('/review',upload.array(),function(req,res){
+	console.log(req.body);
+	console.log(req.files);
+	var bodyData = '';
+	req.on('data', function (chunk) {
+		bodyData += chunk.toString();
+	});
+	req.on('end', function() {
+		console.log(req.body);
+		console.log(bodyData.split("=")[1]);
+		  var file = bodyData.split("=")[1]; 
+		  fs.readFile(file, function (err, data) {
+			 if(err) console.log(err);
+			 console.log(data);
+			 var buf = new Buffer(data);
+			 console.log(buf.toString());
+			 res.end(data);
+		  });
+		
+	});
+	/*
+	var form = new formidable.IncomingForm();
+
+    form.parse(req, function(err, fields, files) {
+      res.writeHead(200, {'content-type': 'text/plain'});
+	  console.log(files);
+	  console.log(fields);
+	  console.log(fields.uploadFile);
+	  console.log(fields.uploadFile.path + "");
+      // The next function call, and the require of 'fs' above, are the only
+      // changes I made from the sample code on the formidable github
+      // 
+      // This simply reads the file from the tempfile path and echoes back
+      // the contents to the response.
+      fs.readFile(fields.uploadFile.path + "", function (err, data) {
+		  console.log(data);
+        res.end(data);
+      });
+    });
+	*/
+	
 	
 });
 
