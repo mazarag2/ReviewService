@@ -39,6 +39,9 @@ console.log(process.env.LOCAL_CLIENT_ID);
 const {google} = require('googleapis');
 const axios = require('axios');
 
+const NodeCache = require( "node-cache" );
+const authCache = new NodeCache();
+
 const oauth2Client = new google.auth.OAuth2(
   process.env.LOCAL_CLIENT_ID,
   process.env.LOCAL_CLIENT_SECRET,
@@ -57,12 +60,13 @@ app.get('/home',function(req,res){
 app.get('/review',function(req,res){
 	
 	
+	var scopes = ['email','profile','https://www.googleapis.com/auth/drive'];
 	
 	const url = oauth2Client.generateAuthUrl({
 	  // 'online' (default) or 'offline' (gets refresh_token)
 	  access_type: 'offline',
 	  // If you only need one scope you can pass it as a string
-	  scope: 'https://www.googleapis.com/auth/drive',
+	  scope: scopes,
 	  prompt: 'consent'
 	});
 	console.log(url);
@@ -73,12 +77,42 @@ app.get('/review',function(req,res){
 
 app.get('/oauthRedirect', async (req,res) => {
 	
+	
 	console.log(req.query.code);
+	
 	var authCode = req.query.code; 
+	var id_token = req.query.id_token;
 	const {tokens} = await oauth2Client.getToken(authCode);
 	console.log(tokens);
+	console.log(tokens.id_token);
+	var id_token = tokens.id_token;
 	oauth2Client.setCredentials(tokens);
-	res.render('CreateReview');
+	
+	async function verify(id_token,res) {
+	  const ticket = await client.verifyIdToken({
+		  idToken: id_token,
+		  audience: [process.env.LOCAL_CLIENT_ID,process.env.PROD_CLIENT_ID]  // Specify the CLIENT_ID of the app that accesses the backend
+      // Or, if multiple clients access the backend:
+      //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
+      });
+	  const payload = ticket.getPayload();
+	  console.log(payload);	
+	  var email = payload.email;
+	  
+	  const userid = payload['sub'];
+	  
+	  console.log(userid);
+	  return payload;
+    // If request specified a G Suite domain:
+    //const domain = payload['hd'];
+   }
+   var payload = await verify(id_token).catch(console.error);
+   console.log(payload);
+   var userAuth = {email : payload.email,token : tokens};
+   authCache.set( "myKey", userAuth, 100000);
+	//myCache.set( "myKey", obj, 10000 );
+   const url = '';
+   res.render('CreateReview',{google_auth_url : url,authenticated : true,email : payload.email});
 	
 });
 
@@ -92,7 +126,6 @@ app.get('/authenticate',function(req,res){
 (async () => {	
 	//const client = await OAuth2Client.getClient();
 	oauth2Client.on('tokens',(tokens) =>{
-		
 		console.log(tokens.access_token);
 		res.send(tokens.access_token);
 	})
@@ -101,7 +134,8 @@ app.get('/authenticate',function(req,res){
 	
 });
 
-app.post('/review',upload.array(),function(req,res){
+app.post('/reviews',upload.array(),function(req,res){
+	
 	console.log(req.body);
 	console.log(req.files);
 	var bodyData = '';
@@ -117,6 +151,8 @@ app.post('/review',upload.array(),function(req,res){
 			 console.log(data);
 			 var buf = new Buffer(data);
 			 console.log(buf.toString());
+			 
+			 //upload file to google storageBucket
 			 res.end(data);
 		  });
 		

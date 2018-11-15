@@ -4,19 +4,26 @@ link(href='./css/blog-home.css', rel='stylesheet')
 .card.mb-4
             |             
             .card-body
-              h2.card-title Create Review 
+              if authenticated
+                h2.card-title Create Review Logged in as #{email}
+              else
+                h2.card-title Create Review
               |               
               p.card-text
                 | Upload your review ! 
               |
-              <a href = "#{google_auth_url}">Authenticate with Google</a>
-              form(method='POST', action='/review' encrypt="multipart/form-data" multiple="multiple")
-                input#myFile(name = 'uploadFile' type='file')
-                |   
-                input(type='submit', value='Upload')
-              a.btn.btn-primary(href='#') Start your Review! &rarr;
-              a.btn.btn-primary(href='/review') Or upload your review from Google Drive ! &rarr;
-            |
+              if google_auth_url
+                 <a href = "#{google_auth_url}">Authenticate with Google</a>
+              else 
+                    form(method='POST', action='/reviews' encrypt="multipart/form-data" multiple="multiple")
+                    input#myFile(name = 'uploadFile' type='file')
+                    if authenticated
+                       input(type='submit', value='Upload')
+                       h5(name = 'email' value = email) uploading as #{email}
+                    |   
+                    a.btn.btn-primary(href='#') Start your Review in Editor! &rarr;
+                    a.btn.btn-primary(href='/review') Or upload your review from Google Drive ! &rarr;
+                    |
 script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js')
 |     
 script(src='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.bundle.min.js')
