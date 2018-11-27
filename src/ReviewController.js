@@ -3,12 +3,13 @@ var router = express.Router()
 const qstring = require('querystring');
 const url = require('url');
 const index = require('./index');
-const reviewService = require('./ReviewService');
+const reviewServiceImpl = require('./ReviewService');
 const {google} = require('googleapis');
 var multer = require('multer');
 const upload = multer();
 var fs = require('fs');
 var cookieParser = require('cookie-parser');
+var axios = require('axios');
 app.use(cookieParser());
 
 const oauth2Client = new google.auth.OAuth2(
@@ -41,7 +42,11 @@ function generateAuthUrl(){
 router.post('/reviews/:email',upload.array(),function(req,res){
 	var email = req.params.email;
 	console.log(email);
-	console.log('Req Cookies  ' + req.cookies.email);
+	console.log('Req Cookies  ' + req.cookies.access_token);
+	console.dir(req.cookies);
+	var token = req.cookies.email;
+	console.log(token);
+	//need to access token from cookies
 	var bodyData = '';
 	req.on('data', function (chunk) {
 		bodyData += chunk.toString();
@@ -58,6 +63,8 @@ router.post('/reviews/:email',upload.array(),function(req,res){
 			 var buf = new Buffer(data);
 			 console.log(buf.toString());
 			 
+			 var len = reviewServiceImpl.uploadToStorage(axios,file,email,token);
+			 console.log(len);
 			 //upload file to google storageBucket
 			 res.end(data);
 		  });
