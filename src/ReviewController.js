@@ -18,6 +18,61 @@ const oauth2Client = new google.auth.OAuth2(
   'http://localhost:8080/oauthRedirect'
 );
 
+router.get('/StorageBuckets',async function(req,res){
+	
+	/*
+	const {Storage} = require('@google-cloud/storage');
+
+	// Instantiates a client. If you don't specify credentials when constructing
+	// the client, the client library will look for credentials in the
+	// environment.
+	const storage = new Storage();
+
+	// Makes an authenticated API request.
+	storage
+	  .getBuckets()
+	  .then((results) => {
+		const buckets = results[0];
+
+		console.log('Buckets:');
+		buckets.forEach((bucket) => {
+		  console.log(bucket.name);
+		  res.send(bucket.name);
+		});
+	  })
+	  .catch((err) => {
+		console.error('ERROR:', err);
+	  });
+	  */
+	  const {Storage} = require('@google-cloud/storage');
+      const BUCKET_NAME = 'entrypoint-9aa5e.appspot.com';
+		  // Creates a client
+	  const storage = new Storage();
+
+	  /**
+	   * TODO(developer): Uncomment the following lines before running the sample.
+	   */
+	  // const bucketName = 'Name of a bucket, e.g. my-bucket';
+	  // const filename = 'Local file to upload, e.g. ./local/path/to/file.txt';
+
+	  // Uploads a local file to the bucket
+	  await storage.bucket(BUCKET_NAME).upload(file, {
+		// Support for HTTP requests made with `Accept-Encoding: gzip`
+		gzip: true,
+		metadata: {
+		  // Enable long-lived HTTP caching headers
+		  // Use only if the contents of the file will never change
+		  // (If the contents will change, use cacheControl: 'no-cache')
+		  cacheControl: 'no-cache',
+		},
+	  });
+
+	  console.log('succesfully uploaded');
+	
+	
+	
+});
+
 router.get('/review',function(req,res){
 	
 	var url = generateAuthUrl();
@@ -42,9 +97,9 @@ function generateAuthUrl(){
 router.post('/reviews/:email',upload.array(),function(req,res){
 	var email = req.params.email;
 	console.log(email);
-	console.log('Req Cookies  ' + req.cookies.access_token);
+	console.log('Req Cookies  ' + req.cookies[email]);
 	console.dir(req.cookies);
-	var token = req.cookies.email;
+	var token = req.cookies[email].access_token;
 	console.log(token);
 	//need to access token from cookies
 	var bodyData = '';
@@ -62,9 +117,9 @@ router.post('/reviews/:email',upload.array(),function(req,res){
 			 console.log(data);
 			 var buf = new Buffer(data);
 			 console.log(buf.toString());
-			 
-			 var len = reviewServiceImpl.uploadToStorage(axios,file,email,token);
-			 console.log(len);
+			 var newEmail = reviewServiceImpl.getEmailEscapedfromDomain(email);
+			 reviewServiceImpl.uploadToStorage(file,newEmail);
+			 //console.log(len);
 			 //upload file to google storageBucket
 			 res.end(data);
 		  });

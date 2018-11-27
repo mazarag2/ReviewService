@@ -123,7 +123,7 @@ app.get('/oauthRedirect', async (req,res) => {
    console.log(payload);
    var userAuth = {email : payload.email,token : tokens};
    authCache.set( payload.email, userAuth, 100000);
-   res.cookie(payload.email,tokens);
+   res.cookie("token",tokens);
    const url = '';
    res.render('CreateReview',{google_auth_url : url,authenticated : true,email : payload.email});
 	
