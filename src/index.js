@@ -5,12 +5,16 @@ app = express();
 app.use(serveStatic(path.join(__dirname, "dist")));
 console.log(path.join(__dirname, "dist"));
 app.use(express.static(__dirname));
+
+var session = require('express-session');
+var cookieParser = require('cookie-parser');
+app.use(cookieParser());
+app.use(session({secret : "secret"}));
 const jade = require('pug');
 var port = process.env.PORT || 8080;
 const qstring = require('querystring');
 app.listen(port);
 console.log("server started "+port);
-const dotev = require('dotenv').config();
 var http = require('http');
 var util = require('util');
 app.set('view engine', 'jade');
@@ -21,6 +25,14 @@ const upload = multer();
 var cors = require('cors');
 app.use(cors());
 var fs = require('fs');
+const dotenv = require('dotenv').config();
+
+
+if (dotenv.error) {
+  throw dotenv.error
+}
+ 
+console.log(dotenv.parsed)
 var firebase = require("firebase");
 var config = {
     apiKey: process.env.API_KEY,
@@ -35,7 +47,7 @@ firebase.initializeApp(config);
 const {OAuth2Client} = require('google-auth-library');
 const client = new OAuth2Client(process.env.LOCAL_CLIENT_ID);
 
-console.log(process.env.LOCAL_CLIENT_ID);
+
 const {google} = require('googleapis');
 const axios = require('axios');
 
@@ -49,6 +61,9 @@ const oauth2Client = new google.auth.OAuth2(
 );
 
 
+const index = require("./ReviewController");
+app.use('/',index);
+
 app.get('/home',function(req,res){
 	
 	var local_id = process.env.LOCAL_CLIENT_ID
@@ -56,7 +71,7 @@ app.get('/home',function(req,res){
 	
 });
 
-
+/*
 app.get('/review',function(req,res){
 	
 	
@@ -73,7 +88,7 @@ app.get('/review',function(req,res){
 	res.render('CreateReview',{google_auth_url : url});
 	
 });
-
+*/
 
 app.get('/oauthRedirect', async (req,res) => {
 	
@@ -91,9 +106,7 @@ app.get('/oauthRedirect', async (req,res) => {
 	async function verify(id_token,res) {
 	  const ticket = await client.verifyIdToken({
 		  idToken: id_token,
-		  audience: [process.env.LOCAL_CLIENT_ID,process.env.PROD_CLIENT_ID]  // Specify the CLIENT_ID of the app that accesses the backend
-      // Or, if multiple clients access the backend:
-      //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
+		  audience: [process.env.LOCAL_CLIENT_ID,process.env.PROD_CLIENT_ID] 
       });
 	  const payload = ticket.getPayload();
 	  console.log(payload);	
@@ -109,8 +122,8 @@ app.get('/oauthRedirect', async (req,res) => {
    var payload = await verify(id_token).catch(console.error);
    console.log(payload);
    var userAuth = {email : payload.email,token : tokens};
-   authCache.set( "myKey", userAuth, 100000);
-	//myCache.set( "myKey", obj, 10000 );
+   authCache.set( payload.email, userAuth, 100000);
+   res.cookie(payload.email,tokens);
    const url = '';
    res.render('CreateReview',{google_auth_url : url,authenticated : true,email : payload.email});
 	
@@ -131,53 +144,6 @@ app.get('/authenticate',function(req,res){
 	})
 	
 })();
-	
-});
-
-app.post('/reviews',upload.array(),function(req,res){
-	
-	console.log(req.body);
-	console.log(req.files);
-	var bodyData = '';
-	req.on('data', function (chunk) {
-		bodyData += chunk.toString();
-	});
-	req.on('end', function() {
-		console.log(req.body);
-		console.log(bodyData.split("=")[1]);
-		  var file = bodyData.split("=")[1]; 
-		  fs.readFile(file, function (err, data) {
-			 if(err) console.log(err);
-			 console.log(data);
-			 var buf = new Buffer(data);
-			 console.log(buf.toString());
-			 
-			 //upload file to google storageBucket
-			 res.end(data);
-		  });
-		
-	});
-	/*
-	var form = new formidable.IncomingForm();
-
-    form.parse(req, function(err, fields, files) {
-      res.writeHead(200, {'content-type': 'text/plain'});
-	  console.log(files);
-	  console.log(fields);
-	  console.log(fields.uploadFile);
-	  console.log(fields.uploadFile.path + "");
-      // The next function call, and the require of 'fs' above, are the only
-      // changes I made from the sample code on the formidable github
-      // 
-      // This simply reads the file from the tempfile path and echoes back
-      // the contents to the response.
-      fs.readFile(fields.uploadFile.path + "", function (err, data) {
-		  console.log(data);
-        res.end(data);
-      });
-    });
-	*/
-	
 	
 });
 
@@ -255,13 +221,4 @@ app.post('/authenticate',cors(),function(req,res){
 });
 function getOAuthClient () {
     return new OAuth2(process.env.Client_id ,  process.env.Client_secret, "http://localhost:8081/home");
-}
-
-function renderIndex(res,username){
-	
-	
-	
-	
-	
-	
 }

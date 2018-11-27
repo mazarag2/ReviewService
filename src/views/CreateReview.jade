@@ -15,12 +15,12 @@ link(href='./css/blog-home.css', rel='stylesheet')
               if google_auth_url
                  <a href = "#{google_auth_url}">Authenticate with Google</a>
               else 
-                    form(method='POST', action='/reviews' encrypt="multipart/form-data" multiple="multiple")
-                    input#myFile(name = 'uploadFile' type='file')
-                    if authenticated
-                       input(type='submit', value='Upload')
-                       h5(name = 'email' value = email) uploading as #{email}
-                    |   
+                    form(method='POST', action='/reviews/' + email encrypt="multipart/form-data" multiple="multiple")
+                        input#myFile(name = 'uploadFile' type='file')
+                        if authenticated
+                           input(type='submit', value='Upload')
+                           h5(name = 'email' value = '#{email}') uploading as #{email}
+                        |   
                     a.btn.btn-primary(href='#') Start your Review in Editor! &rarr;
                     a.btn.btn-primary(href='/review') Or upload your review from Google Drive ! &rarr;
                     |
