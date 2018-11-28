@@ -2,7 +2,10 @@ link(href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.
 // Custom styles for this template
 link(href='./css/blog-home.css', rel='stylesheet')
 .card.mb-4
-            |             
+            |
+            if fileUploaded
+                .alert.alert-success(role='alert')
+                    | Review has succesfully been uploaded !			 
             .card-body
               if authenticated
                 h2.card-title Create Review Logged in as #{email}
@@ -19,6 +22,10 @@ link(href='./css/blog-home.css', rel='stylesheet')
                         input#myFile(name = 'uploadFile' type='file')
                         if authenticated
                            input(type='submit', value='Upload')
+                           br
+                           br
+                           label(for='reviewName') Review Name
+                           input(type='text',id = 'reviewName',value='Enter the name for your review',size = '30', max = '30' required)
                            h5(name = 'email' value = '#{email}') uploading as #{email}
                         |   
                     a.btn.btn-primary(href='#') Start your Review in Editor! &rarr;

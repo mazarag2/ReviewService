@@ -9,7 +9,7 @@ app.use(express.static(__dirname));
 var session = require('express-session');
 var cookieParser = require('cookie-parser');
 app.use(cookieParser());
-app.use(session({secret : "secret"}));
+app.use(session({secret : "secret",cookie : { expires: 100000 }}));
 const jade = require('pug');
 var port = process.env.PORT || 8080;
 const qstring = require('querystring');
@@ -123,7 +123,7 @@ app.get('/oauthRedirect', async (req,res) => {
    console.log(payload);
    var userAuth = {email : payload.email,token : tokens};
    authCache.set( payload.email, userAuth, 100000);
-   res.cookie("token",tokens);
+   res.cookie(payload.email,tokens);
    const url = '';
    res.render('CreateReview',{google_auth_url : url,authenticated : true,email : payload.email});
 	

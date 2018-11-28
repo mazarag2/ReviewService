@@ -73,7 +73,49 @@ router.get('/StorageBuckets',async function(req,res){
 	
 });
 
-router.get('/review',function(req,res){
+router.get('/clearCookies',function(req,res){
+	
+	var Email = Object.keys(req.cookies)[0];
+	res.clearCookie(Email);
+	res.clearCookie('token');
+	res.send('Cookies Cleaered');
+
+});
+
+var checkForToken = function(req,res,next){
+	//check if we have an object
+	var isConnectSid = Object.keys(req.cookies)[0] == 'connect.sid';
+	
+	console.log(isConnectSid);
+	//cookies will usually contain user email if its only sid they need to log in
+	if(!isConnectSid){
+	  console.dir(req.cookies);
+	  console.log(Object.keys(req.cookies)[0]);
+	  var Email = Object.keys(req.cookies)[0];
+	  var token = req.cookies[Email].access_token;
+	  if(token){
+		  var url = '';
+		  res.render('CreateReview',{google_auth_url : url,authenticated : true,email : Email});
+	  }
+	}
+	else{
+		return next();
+	}
+}
+
+
+
+router.get('/reviews',function(req,res){
+	
+	
+	
+	
+	
+	
+});
+
+router.get('/review',checkForToken,function(req,res){
+	
 	
 	var url = generateAuthUrl();
 	res.render('CreateReview',{google_auth_url : url});
@@ -121,9 +163,9 @@ router.post('/reviews/:email',upload.array(),function(req,res){
 			 reviewServiceImpl.uploadToStorage(file,newEmail);
 			 //console.log(len);
 			 //upload file to google storageBucket
-			 res.end(data);
+			 var url = '';
+			 res.render('CreateReview',{google_auth_url : url,fileUploaded : true,authenticated : true,email : email});
 		  });
-		
 	});
 	/*
 	var form = new formidable.IncomingForm();
