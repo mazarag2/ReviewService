@@ -84,11 +84,14 @@ router.get('/clearCookies',function(req,res){
 
 var checkForToken = function(req,res,next){
 	//check if we have an object
+	
+	var firebase = require('firebase');
 	var isConnectSid = Object.keys(req.cookies)[0] == 'connect.sid';
 	var emptyObject = Object.keys(req.cookies).length == 0;
 	console.log(isConnectSid);
 	//cookies will usually contain user email if its only sid they need to log in
-	if(!isConnectSid || emptyObject){
+	//firebase.auth().currentUser (!isConnectSid || emptyObject
+	if(firebase.auth().currentUser){
 	  console.dir(req.cookies);
 	  console.log(Object.keys(req.cookies)[0]);
 	  var Email = Object.keys(req.cookies)[0];
@@ -165,10 +168,11 @@ router.post('/reviews/:email',upload.array(),function(req,res){
 			 var buf = new Buffer(data);
 			 console.log(buf.toString());
 			 
-			
-			var date = new Date();
+			 var newEmail = reviewServiceImpl.getEmailEscapedfromDomain(email);
+			 var date = new Date();
 			 var reviewInfo = {
 				 
+				 email : newEmail,
 				 author : fullname,
 			     reviewName : reviewName,	 
 				 DatePosted : date,
@@ -178,7 +182,8 @@ router.post('/reviews/:email',upload.array(),function(req,res){
 			 console.dir(reviewInfo);
 			 
 			 
-			 var newEmail = reviewServiceImpl.getEmailEscapedfromDomain(email);
+			 reviewServiceImpl.createReview(reviewInfo);
+			 
 			 //reviewServiceImpl.uploadToStorage(file,newEmail);
 			 
 			 var url = '';

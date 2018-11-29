@@ -43,6 +43,7 @@ var ReviewService = {
 	createReview : function(reviewInfo){
 		
 		var firebase = require("firebase");
+		/*
 		var config = {
 			apiKey: process.env.API_KEY,
 			authDomain: "entrypoint-9aa5e.firebaseapp.com",
@@ -53,20 +54,19 @@ var ReviewService = {
 		};
 
 		firebase.initializeApp(config);
-		
+		*/
 		console.log(firebase.auth().currentUser);
 		
-		var reviewRef = firebase.database().ref('reviews/');
-		
+		var reviewRef = firebase.database().ref("Reviews");
 		var id = reviewRef.child(reviewInfo.email);
 		
 		var newRef = id.push();
 		
 		newRef.set({
-			author : entryInfo.fullname,
-			reviewName : entryInfo.reviewName,
-			DatePosted : entryInfo.date,
-			reviewFileName : entryInfo.file
+			author : reviewInfo.author,
+			reviewName : reviewInfo.reviewName,
+			DatePosted : reviewInfo.DatePosted,
+			reviewFileName : reviewInfo.reviewFileName
 		});
 		
 		

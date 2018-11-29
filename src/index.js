@@ -96,13 +96,30 @@ app.get('/oauthRedirect', async (req,res) => {
 	console.log(req.query.code);
 	
 	var authCode = req.query.code; 
-	var id_token = req.query.id_token;
+	//var id_token = req.query.id_token;
+	
+
+	
 	const {tokens} = await oauth2Client.getToken(authCode);
 	console.log(tokens);
 	console.log(tokens.id_token);
 	var id_token = tokens.id_token;
 	oauth2Client.setCredentials(tokens);
+	var credential = firebase.auth.GoogleAuthProvider.credential(id_token);
 	
+	firebase.auth().signInAndRetrieveDataWithCredential(credential).catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+		console.log(errorCode);
+        var errorMessage = error.message;
+		console.log(errorMessage);
+        // The email of the user's account used.
+        var email = error.email;
+        // The firebase.auth.AuthCredential type that was used.
+        var credential = error.credential;
+		console.log(credential);
+        // ...
+    });
 	async function verify(id_token,res) {
 	  const ticket = await client.verifyIdToken({
 		  idToken: id_token,
