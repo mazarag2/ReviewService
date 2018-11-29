@@ -40,6 +40,37 @@ var ReviewService = {
 	  fs.unlinkSync(email +'-'+ file);
 	  console.log('succesfully uploaded');
 	},
+	createReview : function(reviewInfo){
+		
+		var firebase = require("firebase");
+		var config = {
+			apiKey: process.env.API_KEY,
+			authDomain: "entrypoint-9aa5e.firebaseapp.com",
+			databaseURL: "https://entrypoint-9aa5e.firebaseio.com",
+			projectId: "entrypoint-9aa5e",
+			storageBucket: "entrypoint-9aa5e.appspot.com",
+			messagingSenderId: "951702162449"
+		};
+
+		firebase.initializeApp(config);
+		
+		console.log(firebase.auth().currentUser);
+		
+		var reviewRef = firebase.database().ref('reviews/');
+		
+		var id = reviewRef.child(reviewInfo.email);
+		
+		var newRef = id.push();
+		
+		newRef.set({
+			author : entryInfo.fullname,
+			reviewName : entryInfo.reviewName,
+			DatePosted : entryInfo.date,
+			reviewFileName : entryInfo.file
+		});
+		
+		
+	},
 	getEmailEscapedfromDomain: function(email){
 		
 		if(!email) return email;

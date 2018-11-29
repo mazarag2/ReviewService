@@ -11,7 +11,7 @@ var fs = require('fs');
 var cookieParser = require('cookie-parser');
 var axios = require('axios');
 app.use(cookieParser());
-
+var path = require('path');
 const oauth2Client = new google.auth.OAuth2(
   process.env.LOCAL_CLIENT_ID,
   process.env.LOCAL_CLIENT_SECRET,
@@ -85,10 +85,10 @@ router.get('/clearCookies',function(req,res){
 var checkForToken = function(req,res,next){
 	//check if we have an object
 	var isConnectSid = Object.keys(req.cookies)[0] == 'connect.sid';
-	
+	var emptyObject = Object.keys(req.cookies).length == 0;
 	console.log(isConnectSid);
 	//cookies will usually contain user email if its only sid they need to log in
-	if(!isConnectSid){
+	if(!isConnectSid || emptyObject){
 	  console.dir(req.cookies);
 	  console.log(Object.keys(req.cookies)[0]);
 	  var Email = Object.keys(req.cookies)[0];
@@ -143,6 +143,8 @@ router.post('/reviews/:email',upload.array(),function(req,res){
 	console.dir(req.cookies);
 	var token = req.cookies[email].access_token;
 	console.log(token);
+	console.log(req.cookies['name']);
+	var fullname = req.cookies['name'];
 	//need to access token from cookies
 	var bodyData = '';
 	req.on('data', function (chunk) {
@@ -151,43 +153,37 @@ router.post('/reviews/:email',upload.array(),function(req,res){
 	req.on('end', function() {
 		//console.log(req); we can grab the token from here too
 		console.log(bodyData);
-		console.log(req.body);
 		console.log(bodyData.split("=")[1]);
-		  var file = bodyData.split("=")[1]; 
+		  var file = bodyData.split("&")[0];
+		  file = file.split("=")[1];
+		  var reviewName = bodyData.split("&")[1];
+		  reviewName = reviewName.split("=")[1];
+		  console.log(reviewName);
 		  fs.readFile(file, function (err, data) {
 			 if(err) console.log(err);
 			 console.log(data);
 			 var buf = new Buffer(data);
 			 console.log(buf.toString());
+			 
+			
+			var date = new Date();
+			 var reviewInfo = {
+				 
+				 author : fullname,
+			     reviewName : reviewName,	 
+				 DatePosted : date,
+				 reviewFileName : path.basename(file) 
+			 }
+			 
+			 console.dir(reviewInfo);
+			 
+			 
 			 var newEmail = reviewServiceImpl.getEmailEscapedfromDomain(email);
-			 reviewServiceImpl.uploadToStorage(file,newEmail);
-			 //console.log(len);
-			 //upload file to google storageBucket
+			 //reviewServiceImpl.uploadToStorage(file,newEmail);
+			 
 			 var url = '';
 			 res.render('CreateReview',{google_auth_url : url,fileUploaded : true,authenticated : true,email : email});
 		  });
-	});
-	/*
-	var form = new formidable.IncomingForm();
-
-    form.parse(req, function(err, fields, files) {
-      res.writeHead(200, {'content-type': 'text/plain'});
-	  console.log(files);
-	  console.log(fields);
-	  console.log(fields.uploadFile);
-	  console.log(fields.uploadFile.path + "");
-      // The next function call, and the require of 'fs' above, are the only
-      // changes I made from the sample code on the formidable github
-      // 
-      // This simply reads the file from the tempfile path and echoes back
-      // the contents to the response.
-      fs.readFile(fields.uploadFile.path + "", function (err, data) {
-		  console.log(data);
-        res.end(data);
-      });
-    });
-	*/
-	
-	
+	});	
 });
 module.exports = router

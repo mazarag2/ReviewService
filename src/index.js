@@ -118,12 +118,14 @@ app.get('/oauthRedirect', async (req,res) => {
 	  return payload;
     // If request specified a G Suite domain:
     //const domain = payload['hd'];
-   }
+    }
    var payload = await verify(id_token).catch(console.error);
    console.log(payload);
+   var fullname = payload.given_name + ' ' + payload.family_name;
    var userAuth = {email : payload.email,token : tokens};
    authCache.set( payload.email, userAuth, 100000);
    res.cookie(payload.email,tokens);
+   res.cookie('name',fullname);
    const url = '';
    res.render('CreateReview',{google_auth_url : url,authenticated : true,email : payload.email});
 	
