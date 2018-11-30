@@ -92,9 +92,10 @@ var checkForToken = function(req,res,next){
 	//cookies will usually contain user email if its only sid they need to log in
 	//firebase.auth().currentUser (!isConnectSid || emptyObject
 	if(firebase.auth().currentUser){
-	  console.dir(req.cookies);
-	  console.log(Object.keys(req.cookies)[0]);
+	  //console.dir(req.cookies);
+	  //console.log(Object.keys(req.cookies)[0]);
 	  var Email = Object.keys(req.cookies)[0];
+	  console.log(Email);
 	  var token = req.cookies[Email].access_token;
 	  if(token){
 		  var url = '';

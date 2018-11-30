@@ -56,9 +56,9 @@ var ReviewService = {
 		firebase.initializeApp(config);
 		*/
 		console.log(firebase.auth().currentUser);
-		
+		console.log('UID ' + firebase.auth().currentUser.uid);
 		var reviewRef = firebase.database().ref("Reviews");
-		var id = reviewRef.child(reviewInfo.email);
+		var id = reviewRef.child(firebase.auth().currentUser.uid);
 		
 		var newRef = id.push();
 		

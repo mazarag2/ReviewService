@@ -120,6 +120,7 @@ app.get('/oauthRedirect', async (req,res) => {
 		console.log(credential);
         // ...
     });
+	
 	async function verify(id_token,res) {
 	  const ticket = await client.verifyIdToken({
 		  idToken: id_token,
@@ -143,6 +144,15 @@ app.get('/oauthRedirect', async (req,res) => {
    authCache.set( payload.email, userAuth, 100000);
    res.cookie(payload.email,tokens);
    res.cookie('name',fullname);
+   
+   //set uid in users ref
+   /*
+   var uid = firebase.auth().uid;
+	
+   var usersRef = firebase.database().ref("Users");
+	
+   usersRef.set({uid : fullname});
+   */
    const url = '';
    res.render('CreateReview',{google_auth_url : url,authenticated : true,email : payload.email});
 	
