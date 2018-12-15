@@ -65,8 +65,9 @@ var ReviewService = {
 		newRef.set({
 			author : reviewInfo.author,
 			reviewName : reviewInfo.reviewName,
-			DatePosted : reviewInfo.DatePosted,
-			reviewFileName : reviewInfo.reviewFileName
+			DatePosted : firebase.database.ServerValue.TIMESTAMP,
+			reviewFileName : reviewInfo.reviewFileName,
+			
 		});
 		
 		
@@ -80,6 +81,19 @@ var ReviewService = {
 		var newEmail = email.substring(0,pos); 
 		
 		return newEmail;
+	},
+	getLatestReviews: async function(firebase){
+		
+		//var firebase = require("firebase");
+		
+		var reviewRef = firebase.database().ref("Reviews");
+		
+		return reviewRef.once('value').then((snapshot) => {
+			console.log(snapshot.val());
+			return snapshot.val();
+		});
+
+		
 	}
 }
 module.exports = ReviewService;

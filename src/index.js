@@ -26,7 +26,7 @@ var cors = require('cors');
 app.use(cors());
 var fs = require('fs');
 const dotenv = require('dotenv').config();
-
+const reviewServiceImpl = require('./ReviewService');
 
 if (dotenv.error) {
   throw dotenv.error
@@ -66,7 +66,10 @@ app.use('/',index);
 
 app.get('/home',function(req,res){
 	
-	var local_id = process.env.LOCAL_CLIENT_ID
+	var local_id = process.env.LOCAL_CLIENT_ID;
+	var reviews = reviewServiceImpl.getReviews();
+	
+	
 	res.render('home',{LOCAL_CLIENT_ID : local_id});
 	
 });
