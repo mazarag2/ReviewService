@@ -43,24 +43,16 @@ var ReviewService = {
 	createReview : function(reviewInfo){
 		
 		var firebase = require("firebase");
-		/*
-		var config = {
-			apiKey: process.env.API_KEY,
-			authDomain: "entrypoint-9aa5e.firebaseapp.com",
-			databaseURL: "https://entrypoint-9aa5e.firebaseio.com",
-			projectId: "entrypoint-9aa5e",
-			storageBucket: "entrypoint-9aa5e.appspot.com",
-			messagingSenderId: "951702162449"
-		};
-
-		firebase.initializeApp(config);
-		*/
 		console.log(firebase.auth().currentUser);
 		console.log('UID ' + firebase.auth().currentUser.uid);
 		var reviewRef = firebase.database().ref("Reviews");
+		var reviewByDateRef = firebase.database().ref("ReviewsByDate"); 
 		var id = reviewRef.child(firebase.auth().currentUser.uid);
 		
+		
 		var newRef = id.push();
+		
+		var newReviewByDateRef = reviewByDateRef.child(newRef.key);
 		
 		newRef.set({
 			author : reviewInfo.author,
@@ -70,6 +62,14 @@ var ReviewService = {
 			
 		});
 		
+		newReviewByDateRef.set({
+			
+			DatePosted : firebase.database.ServerValue.TIMESTAMP,
+			author : reviewInfo.author,
+			reviewFileName : reviewInfo.reviewFileName,
+			reviewName : reviewInfo.reviewName
+			
+		});
 		
 	},
 	getEmailEscapedfromDomain: function(email){
@@ -82,13 +82,17 @@ var ReviewService = {
 		
 		return newEmail;
 	},
-	getLatestReviews: async function(firebase){
-		
-		//var firebase = require("firebase");
-		
-		var reviewRef = firebase.database().ref("Reviews");
-		
+	getLatestReviews: function(firebase){
+			
+		//limitTolast to achieve DESC order 
+		var reviewRef = firebase.database().ref("ReviewsByDate").limitToLast(1);
+		/*
 		return reviewRef.once('value').then((snapshot) => {
+			console.log(snapshot.val());
+			return snapshot.val();
+		});
+		*/
+		return reviewRef.orderByChild("DatePosted").once('value').then((snapshot) => {
 			console.log(snapshot.val());
 			return snapshot.val();
 		});
