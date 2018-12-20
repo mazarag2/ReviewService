@@ -68,18 +68,7 @@ app.get('/home',function(req,res){
 	
 	var local_id = process.env.LOCAL_CLIENT_ID;
 	var reviews = reviewServiceImpl.getLatestReviews();
-	
-	var keySet = Object.keys(reviews);
-	
-	for(var index = 0 ; index <= keySet.length - 1; index++){
 		
-		
-		
-		
-		
-	}
-	
-	
 	res.render('home',{LOCAL_CLIENT_ID : local_id});
 	
 });

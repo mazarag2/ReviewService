@@ -1,6 +1,7 @@
 var assert = require('assert');
 
 const reviewService = require("../src/ReviewService");
+const reviewAdapter = require("../src/ReviewAdapter");
 const dotev = require('dotenv').config();
 var expect = require('chai').expect;
 
@@ -32,6 +33,37 @@ describe('TestreviewService', function() {
 		
 	});
 	
+	
+	describe('#CheckReviewAdapter',() =>{
+		
+		it('should return reviews in an array format',() =>{
+			    var assert = require('assert');
+				var reviews = {
+					 '-LTnEYdfgIsdkD72HoQj':
+						{ "DatePosted": 1544900458841,
+						 "author": 'Mike Zaragoza',
+						 "reviewFileName": 'README.md',
+						 "reviewName": 'review+this+b' },
+					  '-LTnEydftIsdyD12Hewa':
+					   { "DatePosted": 1544900458844,
+						 "author": 'Tom Zaragoza',
+						 "reviewFileName": 'README2.md',
+						 "reviewName": 'review+this+b+bb' }
+				}
+			
+				var result = reviewAdapter.returnReviewsforView(reviews);
+			
+				expect(result).to.be.an.instanceof(Array);
+				expect(result[0]).to.have.property('DatePosted');
+				expect(result[0]).to.have.property('author');
+				expect(result[0]).to.have.property('reviewFileName');
+				expect(result[0]).to.have.property('reviewName');
+				
+
+			
+		});
+		
+	});
 	describe('#CheckReviewService',() => {
 		
 		it('should return the latest reviews',(done) => {
