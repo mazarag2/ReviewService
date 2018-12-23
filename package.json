@@ -4,8 +4,8 @@
   "description": "microservice for editing,viewing,and deleting reviews\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[Dcreatingv\u001b[D,\u001b[2~v\u001b[3~\u001b[3~\u001b[3~\u001b[3~\u001b[3~iewing, and deleting reviews",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/ReviewControllerTest.js",
-    "start": "nodemon src/index.js"
+    "test": "mocha test/ReviewControllerTest.js --exit",
+    "start": "node src/index.js"
   },
   "repository": {
     "type": "git",
