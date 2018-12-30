@@ -1,10 +1,8 @@
 doctype html(lang='en')
 head
-    <!--https://github.com/BlackrockDigital/startbootstrap-blog-home/blob/master/index.html -->
     script(src='https://apis.google.com/js/platform.js', async='', defer='')
-    meta(name='google-signin-client_id', content="#{LOCAL_CLIENT_ID}")
+    meta(name='google-signin-client_id', content='{LOCAL_CLIENT_ID}')
     <!--https://github.com/BlackrockDigital/startbootstrap-blog-home/blob/master/index.html -->
-    meta(charset='utf-8')
     meta(charset='utf-8')
     |     
     meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
@@ -23,12 +21,11 @@ head
     // Navigation
     nav.navbar.navbar-expand-lg.navbar-dark.bg-dark.fixed-top
       .container
-        a.navbar-brand(href='#') EntryPoint
+        a.navbar-brand(href='#') Start Bootstrap
         |         
         button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarResponsive', aria-controls='navbarResponsive', aria-expanded='false', aria-label='Toggle navigation')
           span.navbar-toggler-icon
-        |
-        .g-signin2(data-onsuccess='onSignIn')
+        |         
         #navbarResponsive.collapse.navbar-collapse
           ul.navbar-nav.ml-auto
             li.nav-item.active
@@ -50,52 +47,24 @@ head
         // Blog Entries Column
         .col-md-8
           h1.my-4
-            | Game Reviews/Articles
+            | Page Heading
+            small Secondary Text
           // Blog Post
-          .card.mb-4
-            img.card-img-top(src='http://placehold.it/750x300', alt='Card image cap')
-            |             
-            .card-body
-              h2.card-title #{reviewName}
-              |               
-              p.card-text
-                | #{reviewSummary}
-              |               
-              a.btn.btn-primary(href='#') Read More &rarr;
-            |             
-            .card-footer.text-muted
-              | Posted on January 1, 2017 by #{author}
-              a(href='#') Start Bootstrap
-          // Blog Post
-          .card.mb-4
-            img.card-img-top(src='http://placehold.it/750x300', alt='Card image cap')
-            |             
-            .card-body
-              h2.card-title Post Title
-              |               
-              p.card-text
-                | Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis aliquid atque, nulla? Quos cum ex quis soluta, a laboriosam. Dicta expedita corporis animi vero voluptate voluptatibus possimus, veniam magni quis!
-              |               
-              a.btn.btn-primary(href='#') Read More &rarr;
-            |             
-            .card-footer.text-muted
-              | Posted on January 1, 2017 by
-              a(href='#') Start Bootstrap
-          // Blog Post
-          .card.mb-4
-            img.card-img-top(src='http://placehold.it/750x300', alt='Card image cap')
-            |             
-            .card-body
-              h2.card-title Post Title
-              |               
-              p.card-text
-                | Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis aliquid atque, nulla? Quos cum ex quis soluta, a laboriosam. Dicta expedita corporis animi vero voluptate voluptatibus possimus, veniam magni quis!
-              |               
-              a.btn.btn-primary(href='#') Read More &rarr;
-            |             
-            .card-footer.text-muted
-              | Posted on January 1, 2017 by
-              a(href='#') Start Bootstrap
+          for review in reviews
+           .card.mb-4
+             img.card-img-top(src='http://placehold.it/750x300', alt='Card image cap')
+             |             
+             .card-body
+               h2.card-title #{review.reviewName}
+               |               
+               p.card-text
+                 | #{review.reviewSummary}
+               |               
+               a.btn.btn-primary(href='#') Read More &rarr;
+             |             
+             .card-footer.text-muted
+               | Posted on #{review.DatePosted} by #{review.author}
+               a(href='#') Start Bootstrap
           // Pagination
           ul.pagination.justify-content-center.mb-4
             li.page-item
@@ -116,6 +85,11 @@ head
                 span.input-group-btn
                   button.btn.btn-secondary(type='button') Go!
           // Categories Widget
+          .card.my-4
+            h5.card-header Side Widget
+            |             
+            .card-body
+              a(href='/review') Create or Upload your Review !
           .card.my-4
             h5.card-header Categories
             |             
@@ -142,12 +116,8 @@ head
                     |                     
                     li
                       a(href='#') Tutorials
-          // Get Started
-          .card.my-4
-            h5.card-header Side Widget
-            |             
-            .card-body
-              a(href='/review') Create or Upload your Review !
+   
+
       // /.row
     // /.container
     // Footer

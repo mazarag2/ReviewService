@@ -1,7 +1,7 @@
 doctype html(lang='en')
 head
     script(src='https://apis.google.com/js/platform.js', async='', defer='')
-    meta(name='google-signin-client_id', content='{LOCAL_CLIENT}_ID}')
+    meta(name='google-signin-client_id', content='{LOCAL_CLIENT_ID}')
     <!--https://github.com/BlackrockDigital/startbootstrap-blog-home/blob/master/index.html -->
     meta(charset='utf-8')
     |     
@@ -42,6 +42,7 @@ head
             li.nav-item
               a.nav-link(href='#') Contact
     // Page Content
+   for review in reviews
     .container
       .row
         // Blog Entries Column
@@ -50,50 +51,21 @@ head
             | Page Heading
             small Secondary Text
           // Blog Post
-          .card.mb-4
-            img.card-img-top(src='http://placehold.it/750x300', alt='Card image cap')
-            |             
-            .card-body
-              h2.card-title Post Title
-              |               
-              p.card-text
-                | Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis aliquid atque, nulla? Quos cum ex quis soluta, a laboriosam. Dicta expedita corporis animi vero voluptate voluptatibus possimus, veniam magni quis!
-              |               
-              a.btn.btn-primary(href='#') Read More &rarr;
-            |             
-            .card-footer.text-muted
-              | Posted on January 1, 2017 by
-              a(href='#') Start Bootstrap
-          // Blog Post
-          .card.mb-4
-            img.card-img-top(src='http://placehold.it/750x300', alt='Card image cap')
-            |             
-            .card-body
-              h2.card-title Post Title
-              |               
-              p.card-text
-                | Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis aliquid atque, nulla? Quos cum ex quis soluta, a laboriosam. Dicta expedita corporis animi vero voluptate voluptatibus possimus, veniam magni quis!
-              |               
-              a.btn.btn-primary(href='#') Read More &rarr;
-            |             
-            .card-footer.text-muted
-              | Posted on January 1, 2017 by
-              a(href='#') Start Bootstrap
-          // Blog Post
-          .card.mb-4
-            img.card-img-top(src='http://placehold.it/750x300', alt='Card image cap')
-            |             
-            .card-body
-              h2.card-title Post Title
-              |               
-              p.card-text
-                | Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis aliquid atque, nulla? Quos cum ex quis soluta, a laboriosam. Dicta expedita corporis animi vero voluptate voluptatibus possimus, veniam magni quis!
-              |               
-              a.btn.btn-primary(href='#') Read More &rarr;
-            |             
-            .card-footer.text-muted
-              | Posted on January 1, 2017 by
-              a(href='#') Start Bootstrap
+          
+           .card.mb-4
+             img.card-img-top(src='http://placehold.it/750x300', alt='Card image cap')
+             |             
+             .card-body
+               h2.card-title #{review.reviewName}
+               |               
+               p.card-text
+                 | Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis aliquid atque, nulla? Quos cum ex quis soluta, a laboriosam. Dicta expedita corporis animi vero voluptate voluptatibus possimus, veniam magni quis!
+               |               
+               a.btn.btn-primary(href='#') Read More &rarr;
+             |             
+             .card-footer.text-muted
+               | Posted on val.DatePosted by val.author
+               a(href='#') Start Bootstrap
           // Pagination
           ul.pagination.justify-content-center.mb-4
             li.page-item

@@ -151,7 +151,7 @@ router.post('/reviews/:email',upload.array(),function(req,res){
 	var token = req.cookies[email].access_token;
 	console.log(token);
 	console.log(req.cookies['name']);
-	var fullname = req.cookies['name'];
+	var fullname = req.cookies['name']; 
 	//need to access token from cookies
 	var bodyData = '';
 	req.on('data', function (chunk) {
@@ -164,7 +164,9 @@ router.post('/reviews/:email',upload.array(),function(req,res){
 		  var file = bodyData.split("&")[0];
 		  file = file.split("=")[1];
 		  var reviewName = bodyData.split("&")[1];
+		  var reviewSubText = bodyData.split("&")[2];
 		  reviewName = reviewName.split("=")[1];
+		  reviewSubText = reviewSubText.split("=")[1];
 		  console.log(reviewName);
 		  fs.readFile(file, function (err, data) {
 			 if(err) console.log(err);
@@ -178,6 +180,7 @@ router.post('/reviews/:email',upload.array(),function(req,res){
 				 
 				 email : newEmail,
 				 author : fullname,
+				 reviewSummary : reviewSubText,
 			     reviewName : reviewName,	 
 				 DatePosted : date,
 				 reviewFileName : path.basename(file) 

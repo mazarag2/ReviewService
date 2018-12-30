@@ -27,7 +27,7 @@ app.use(cors());
 var fs = require('fs');
 const dotenv = require('dotenv').config();
 const reviewServiceImpl = require('./ReviewService');
-
+const reviewAdapter = require('./ReviewAdapter');
 if (dotenv.error) {
   throw dotenv.error
 }
@@ -64,12 +64,13 @@ const oauth2Client = new google.auth.OAuth2(
 const index = require("./ReviewController");
 app.use('/',index);
 
-app.get('/home',function(req,res){
+app.get('/home',async function(req,res){
 	
 	var local_id = process.env.LOCAL_CLIENT_ID;
-	var reviews = reviewServiceImpl.getLatestReviews();
-		
-	res.render('home',{LOCAL_CLIENT_ID : local_id});
+	var objReviews = await reviewServiceImpl.getLatestReviews(firebase);
+	var Reviews = reviewAdapter.returnReviewsforView(objReviews);
+	console.log(Reviews);
+	res.render('home',{LOCAL_CLIENT_ID : local_id,reviews : Reviews});
 	
 });
 

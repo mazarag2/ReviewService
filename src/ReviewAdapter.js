@@ -14,6 +14,7 @@ var ReviewAdapter = {
 				
 				"DatePosted" : currentReviewData.DatePosted,
 				"author" : currentReviewData.author,
+				"reviewSummary" : currentReviewData.reviewSummary,
 				"reviewFileName" : currentReviewData.reviewFileName,
 				"reviewName" : currentReviewData.reviewName
 				

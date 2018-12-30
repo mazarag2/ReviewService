@@ -57,15 +57,16 @@ var ReviewService = {
 		newRef.set({
 			author : reviewInfo.author,
 			reviewName : reviewInfo.reviewName,
+			reviewSummary : reviewInfo.reviewSummary,
 			DatePosted : firebase.database.ServerValue.TIMESTAMP,
-			reviewFileName : reviewInfo.reviewFileName,
-			
+			reviewFileName : reviewInfo.reviewFileName
 		});
 		
 		newReviewByDateRef.set({
 			
 			DatePosted : firebase.database.ServerValue.TIMESTAMP,
 			author : reviewInfo.author,
+			reviewSummary : reviewInfo.reviewSummary,
 			reviewFileName : reviewInfo.reviewFileName,
 			reviewName : reviewInfo.reviewName
 			
@@ -93,7 +94,7 @@ var ReviewService = {
 		});
 		*/
 		return reviewRef.orderByChild("DatePosted").once('value').then((snapshot) => {
-			console.log(snapshot.val());
+			//console.log(snapshot.val());
 			return snapshot.val();
 		});
 

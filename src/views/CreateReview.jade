@@ -26,6 +26,11 @@ link(href='./css/blog-home.css', rel='stylesheet')
                            br
                            label(for='reviewName') Review Name
                            input(type='text',name = 'reviewName',id = 'reviewName',value='Enter the name for your review',size = '30', max = '30' required)
+                           br
+                           label(for='reviewSubText') Enter a short Summary of your review
+                           br
+                           textarea(rows='4', name='reviewSubText', cols='50')
+                            | Enter the a short summary of the review you're posting (This will be displayed when your review is shown)
                            h5(name = 'email' value = '#{email}') uploading as #{email}
                         |   
                     a.btn.btn-primary(href='#') Start your Review in Editor! &rarr;
