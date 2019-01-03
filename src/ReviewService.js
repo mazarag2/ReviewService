@@ -86,7 +86,7 @@ var ReviewService = {
 	getLatestReviews: function(firebase){
 			
 		//limitTolast to achieve DESC order 
-		var reviewRef = firebase.database().ref("ReviewsByDate").limitToLast(1);
+		var reviewRef = firebase.database().ref("ReviewsByDate").limitToLast(10);
 		/*
 		return reviewRef.once('value').then((snapshot) => {
 			console.log(snapshot.val());

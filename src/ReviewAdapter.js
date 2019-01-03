@@ -10,11 +10,13 @@ var ReviewAdapter = {
 			var currentKey = keySet[index];
 			var currentReviewData = reviews[currentKey];
 			
+			var date = new Date(currentReviewData.DatePosted);
+			
 			viewReviews.push({
 				
-				"DatePosted" : currentReviewData.DatePosted,
+				"DatePosted" : date.toDateString(),
 				"author" : currentReviewData.author,
-				"reviewSummary" : currentReviewData.reviewSummary,
+				"reviewSummary" : currentReviewData.reviewSummary,	
 				"reviewFileName" : currentReviewData.reviewFileName,
 				"reviewName" : currentReviewData.reviewName
 				
