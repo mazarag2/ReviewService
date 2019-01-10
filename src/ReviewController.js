@@ -12,10 +12,11 @@ var cookieParser = require('cookie-parser');
 var axios = require('axios');
 app.use(cookieParser());
 var path = require('path');
+process.env.oauthRedirect ='https://entrypointreviewservice.herokuapp.com/oauthRedirect';
 const oauth2Client = new google.auth.OAuth2(
-  process.env.LOCAL_CLIENT_ID,
-  process.env.LOCAL_CLIENT_SECRET,
-  'http://localhost:8080/oauthRedirect'
+  process.env.Client_id,
+  process.env.Client_secret,
+  process.env.oauthRedirect
 );
 
 router.get('/StorageBuckets',async function(req,res){

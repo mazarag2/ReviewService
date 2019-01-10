@@ -51,7 +51,7 @@ if(process.env.NODE_ENV == 'Production'){
 
 	process.env.Client_id = process.env.PROD_CLIENT_ID;
 	process.env.Client_secret = process.env.PROD_SECRET_ID;
-	proces.env.oauthRedirect ='https://entrypointreviewservice.herokuapp.com/oauthRedirect';
+	process.env.oauthRedirect ='https://entrypointreviewservice.herokuapp.com/oauthRedirect';
 	
 	
 }
