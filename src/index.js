@@ -44,8 +44,26 @@ var config = {
 };
 
 firebase.initializeApp(config);
+
+if(process.env.NODE_ENV == 'Production'){
+	
+
+	process.env.Client_id = process.env.PROD_CLIENT_ID;
+	process.env.Client_secret = process.env.PROD_SECRET_ID;
+	proces.env.oauthRedirect ='https://entrypointreviewservice.herokuapp.com/oauthRedirect';
+	
+	
+}
+else{
+	//Use local environment set up
+	process.env.Client_id = process.env.LOCAL_CLIENT_ID;
+	process.env.Client_secret = process.env.LOCAL_CLIENT_SECRET;
+	process.env.oauthRedirect = 'http://localhost:8080/oauthRedirect'
+	
+}
+
 const {OAuth2Client} = require('google-auth-library');
-const client = new OAuth2Client(process.env.LOCAL_CLIENT_ID);
+const client = new OAuth2Client(process.env.Client_id);
 
 
 const {google} = require('googleapis');
@@ -55,10 +73,12 @@ const NodeCache = require( "node-cache" );
 const authCache = new NodeCache();
 
 const oauth2Client = new google.auth.OAuth2(
-  process.env.LOCAL_CLIENT_ID,
-  process.env.LOCAL_CLIENT_SECRET,
-  'http://localhost:8080/oauthRedirect'
+  process.env.Client_id,
+  process.env.Client_secret,
+  process.env.oauthRedirect
 );
+
+
 
 
 const index = require("./ReviewController");
@@ -66,7 +86,7 @@ app.use('/',index);
 
 app.get('/home',async function(req,res){
 	
-	var local_id = process.env.LOCAL_CLIENT_ID;
+	var local_id = process.env.Client_id;
 	var objReviews = await reviewServiceImpl.getLatestReviews(firebase);
 	var Reviews = reviewAdapter.returnReviewsforView(objReviews);
 	console.log(Reviews);
