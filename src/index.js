@@ -28,10 +28,11 @@ var fs = require('fs');
 const dotenv = require('dotenv').config();
 const reviewServiceImpl = require('./ReviewService');
 const reviewAdapter = require('./ReviewAdapter');
+/*
 if (dotenv.error) {
   throw dotenv.error
 }
- 
+*/
 console.log(dotenv.parsed)
 var firebase = require("firebase");
 var config = {
