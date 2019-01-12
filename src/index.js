@@ -46,7 +46,7 @@ var config = {
 
 firebase.initializeApp(config);
 
-if(process.env.NODE_ENV == 'Production'){
+if(process.env.NODE_ENV == 'PRODUCTION'){
 	
 
 	process.env.Client_id = process.env.PROD_CLIENT_ID;
