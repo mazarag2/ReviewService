@@ -18,9 +18,7 @@ const oauth2Client = new google.auth.OAuth2(
   process.env.Client_secret,
   process.env.oauthRedirect
 );
-console.log(process.env.Client_id);
-console.log(process.env.Client_secret);
-console.log(process.env.oauthRedirect);
+
 
 router.get('/StorageBuckets',async function(req,res){
 	
@@ -127,7 +125,10 @@ router.get('/reviews',function(req,res){
 
 router.get('/review',checkForToken,function(req,res){
 	
-	
+	console.log(process.env.Client_id);
+	console.log(process.env.Client_secret);
+	console.log(process.env.oauthRedirect);
+		
 	var url = generateAuthUrl();
 	res.render('CreateReview',{google_auth_url : url});
 	
