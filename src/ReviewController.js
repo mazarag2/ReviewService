@@ -12,12 +12,15 @@ var cookieParser = require('cookie-parser');
 var axios = require('axios');
 app.use(cookieParser());
 var path = require('path');
-process.env.oauthRedirect ='https://entrypointreviewservice.herokuapp.com/oauthRedirect';
+process.env.oauthRedirect = 'https://entrypointreviewservice.herokuapp.com/oauthRedirect';
 const oauth2Client = new google.auth.OAuth2(
   process.env.Client_id,
   process.env.Client_secret,
   process.env.oauthRedirect
 );
+console.log(process.env.Client_id);
+console.log(process.env.Client_secret);
+console.log(process.env.oauthRedirect);
 
 router.get('/StorageBuckets',async function(req,res){
 	
@@ -136,7 +139,7 @@ function generateAuthUrl(){
 	
 	const url = oauth2Client.generateAuthUrl({
 	  // 'online' (default) or 'offline' (gets refresh_token)
-	  access_type: 'offline',
+	  access_type: 'online',
 	  scope: scopes,
 	  prompt: 'consent'
 	});
