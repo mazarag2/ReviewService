@@ -30,6 +30,21 @@ const oauth2Client = new google.auth.OAuth2(
   process.env.oauthRedirect
 );
 
+const bodyParser = require("body-parser");
+
+/** bodyParser.urlencoded(options)
+ * Parses the text as URL encoded data (which is how browsers tend to send form data from regular forms set to POST)
+ * and exposes the resulting object (containing the keys and values) on req.body
+ */
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+
+/**bodyParser.json(options)
+ * Parses the text as JSON and exposes the resulting object on req.body.
+ */
+app.use(bodyParser.json());
+
 
 router.get('/StorageBuckets',async function(req,res){
 	
@@ -156,13 +171,11 @@ function generateAuthUrl(){
 	return url;
 }	
 
-router.post('/reviews/:email',upload.single('uploadFile'),function(req,res,next){
+router.post('/reviews/:email',upload.single('uploadFile'),function(req,res){
 	console.log(req.file);
 	var buffer = req.file.buffer.toString();
 	var email = req.params.email;
 	console.log(req.params);
-	var reviewSubText = req.params.reviewName;
-	var reviewName = req.params.reviewSubText;
 	console.log(email);
 	//console.log('Req Cookies  ' + req.cookies[email]);
 	//console.dir(req.cookies);
@@ -171,79 +184,27 @@ router.post('/reviews/:email',upload.single('uploadFile'),function(req,res,next)
 	console.log(req.cookies['name']);
 	var fullname = req.cookies['name']; 
 	
-	var fileName = req.file.originalname;
-	
-	 var newEmail = reviewServiceImpl.getEmailEscapedfromDomain(email);
-	 var date = new Date();
-	 var reviewInfo = {
+	var fileName = req.file.originalname;	
+	var reviewName = req.body.reviewName;
+	var reviewSubText = req.body.reviewSubText;
+	var newEmail = reviewServiceImpl.getEmailEscapedfromDomain(email);
+	var date = new Date();
+	var reviewInfo = {
 		 
 		 email : newEmail,
 		 author : fullname,
 		 reviewSummary : reviewSubText,
 		 reviewName : reviewName,	 
 		 DatePosted : date,
-		 reviewFileName : path.basename(fileName) 
+		 reviewFileName : fileName
 	 }
  
-	 console.dir(reviewInfo);
+	console.dir(reviewInfo);
 	 
+	reviewServiceImpl.createReview(reviewInfo,buffer);
 	 
-	 //reviewServiceImpl.createReview(reviewInfo,buffer);
-	 
-	 reviewServiceImpl.uploadToStorage(fileName,buffer,newEmail);
-	 
-	 var url = '';
-	 res.render('CreateReview',{google_auth_url : url,fileUploaded : true,authenticated : true,email : email});
-	
-	//need to access token from cookies
-	var bodyData = '';
-	req.on('data', function (chunk) {
-		bodyData += chunk.toString();
-	});
-	req.on('end', function() {
-		//console.log(req); we can grab the token from here too
-		console.log(bodyData);
-		console.log(bodyData.split("=")[1]);
-		  var file = bodyData.split("&")[0];
-		  
-		  
-		  file = file.split("=")[1];
-		  console.log('file' + file);
-		  var absolutePath = path.resolve(file);
-		  console.log('abs path ' + absolutePath);
-		  var reviewName = bodyData.split("&")[1];
-		  var reviewSubText = bodyData.split("&")[2];
-		  reviewName = reviewName.split("=")[1];
-		  reviewSubText = reviewSubText.split("=")[1];
-		  console.log(reviewName);
-		  fs.readFile(file, function (err, data) {
-			 if(err) console.log(err);
-			 console.log(data);
-			 var buf = new Buffer(data);
-			 console.log(buf.toString());
-			 
-			 var newEmail = reviewServiceImpl.getEmailEscapedfromDomain(email);
-			 var date = new Date();
-			 var reviewInfo = {
-				 
-				 email : newEmail,
-				 author : fullname,
-				 reviewSummary : reviewSubText,
-			     reviewName : reviewName,	 
-				 DatePosted : date,
-				 reviewFileName : path.basename(file) 
-			 }
-			 
-			 console.dir(reviewInfo);
-			 
-			 
-			 //reviewServiceImpl.createReview(reviewInfo);
-			 
-			 //reviewServiceImpl.uploadToStorage(file,newEmail);
-			 
-			 var url = '';
-			 res.render('CreateReview',{google_auth_url : url,fileUploaded : true,authenticated : true,email : email});
-		  });
-	});	
+	reviewServiceImpl.uploadToStorage(fileName,buffer,newEmail);	
+	var url = '';
+	res.render('CreateReview',{google_auth_url : url,fileUploaded : true,authenticated : true,email : email});
 });
 module.exports = router
