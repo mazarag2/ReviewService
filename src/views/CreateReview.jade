@@ -18,7 +18,7 @@ link(href='./css/blog-home.css', rel='stylesheet')
               if google_auth_url
                  <a href = "#{google_auth_url}">Authenticate with Google</a>
               else 
-                    form(method='POST', action='/reviews/' + email encrypt="multipart/form-data" multiple="multiple")
+                    form(method='POST', action='/reviews/' + email enctype="multipart/form-data")
                         input#myFile(name = 'uploadFile' type='file')
                         if authenticated
                            input(type='submit', value='Upload')

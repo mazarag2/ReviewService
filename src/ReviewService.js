@@ -1,19 +1,26 @@
 var ReviewService = {
-	uploadToStorage : async function(file,email){
+	uploadToStorage : async function(fileName,buffer,email){
 		const BUCKET_NAME = 'entrypoint-9aa5e.appspot.com';
-		var FILE_LENGTH = file.length
-		console.log(FILE_LENGTH);
-		
 		var fs = require('fs');
-
-		fs.createReadStream(file).pipe(fs.createWriteStream(email +'-'+ file));
+		
+		fs.writeFile('files/' + email + '-' + fileName,buffer.toString(),() =>{
+		});
+		
+		
+		
+		//fs.createReadStream(file).pipe(fs.createWriteStream(email +'-'+ file));
 		const STORAGE_URL = 'https://www.googleapis.com/upload/storage/v1/b/entrypoint-9aa5e.appspot.com/o'; 	
 		  // [START storage_upload_file]
 		  // Imports the Google Cloud client library
 	    const {Storage} = require('@google-cloud/storage');
 
 	    // Creates a client
-	    const storage = new Storage();
+	    const storage = new Storage({
+			
+			keyFilename : process.env.JSON_KEY,
+			projectID : process.env.PROJECT_ID
+			
+		});
 		
 	  /**
 	   * TODO(developer): Uncomment the following lines before running the sample.
@@ -23,7 +30,7 @@ var ReviewService = {
 
 	  // Uploads a local file to the bucket
 	  try {
-	    await storage.bucket(BUCKET_NAME).upload(email +'-'+ file, {
+	    await storage.bucket(BUCKET_NAME).upload('files/' + email +'-'+ fileName, {
 		  // Support for HTTP requests made with `Accept-Encoding: gzip`
 		  gzip: true,
 		  metadata: {
@@ -37,7 +44,7 @@ var ReviewService = {
 	  catch(ex){
 		console.log(ex);
 	  }
-	  fs.unlinkSync(email +'-'+ file);
+	  fs.unlinkSync('files/' + email +'-'+ fileName);
 	  console.log('succesfully uploaded');
 	},
 	createReview : function(reviewInfo){

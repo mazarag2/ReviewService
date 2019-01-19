@@ -12,7 +12,18 @@ var cookieParser = require('cookie-parser');
 var axios = require('axios');
 app.use(cookieParser());
 var path = require('path');
-process.env.oauthRedirect = 'https://entrypointreviewservice.herokuapp.com/oauthRedirect';
+
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, __dirname + '../test')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now())
+  }
+})
+
+
+//process.env.oauthRedirect = 'https://entrypointreviewservice.herokuapp.com/oauthRedirect';
 const oauth2Client = new google.auth.OAuth2(
   process.env.Client_id,
   process.env.Client_secret,
@@ -124,10 +135,7 @@ router.get('/reviews',function(req,res){
 });
 
 router.get('/review',checkForToken,function(req,res){
-	
-	console.log(process.env.Client_id);
-	console.log(process.env.Client_secret);
-	console.log(process.env.oauthRedirect);
+
 		
 	var url = generateAuthUrl();
 	res.render('CreateReview',{google_auth_url : url});
@@ -148,15 +156,45 @@ function generateAuthUrl(){
 	return url;
 }	
 
-router.post('/reviews/:email',upload.array(),function(req,res){
+router.post('/reviews/:email',upload.single('uploadFile'),function(req,res,next){
+	console.log(req.file);
+	var buffer = req.file.buffer.toString();
 	var email = req.params.email;
+	console.log(req.params);
+	var reviewSubText = req.params.reviewName;
+	var reviewName = req.params.reviewSubText;
 	console.log(email);
-	console.log('Req Cookies  ' + req.cookies[email]);
-	console.dir(req.cookies);
+	//console.log('Req Cookies  ' + req.cookies[email]);
+	//console.dir(req.cookies);
 	var token = req.cookies[email].access_token;
 	console.log(token);
 	console.log(req.cookies['name']);
 	var fullname = req.cookies['name']; 
+	
+	var fileName = req.file.originalname;
+	
+	 var newEmail = reviewServiceImpl.getEmailEscapedfromDomain(email);
+	 var date = new Date();
+	 var reviewInfo = {
+		 
+		 email : newEmail,
+		 author : fullname,
+		 reviewSummary : reviewSubText,
+		 reviewName : reviewName,	 
+		 DatePosted : date,
+		 reviewFileName : path.basename(fileName) 
+	 }
+ 
+	 console.dir(reviewInfo);
+	 
+	 
+	 //reviewServiceImpl.createReview(reviewInfo,buffer);
+	 
+	 reviewServiceImpl.uploadToStorage(fileName,buffer,newEmail);
+	 
+	 var url = '';
+	 res.render('CreateReview',{google_auth_url : url,fileUploaded : true,authenticated : true,email : email});
+	
 	//need to access token from cookies
 	var bodyData = '';
 	req.on('data', function (chunk) {
@@ -167,7 +205,12 @@ router.post('/reviews/:email',upload.array(),function(req,res){
 		console.log(bodyData);
 		console.log(bodyData.split("=")[1]);
 		  var file = bodyData.split("&")[0];
+		  
+		  
 		  file = file.split("=")[1];
+		  console.log('file' + file);
+		  var absolutePath = path.resolve(file);
+		  console.log('abs path ' + absolutePath);
 		  var reviewName = bodyData.split("&")[1];
 		  var reviewSubText = bodyData.split("&")[2];
 		  reviewName = reviewName.split("=")[1];
@@ -194,7 +237,7 @@ router.post('/reviews/:email',upload.array(),function(req,res){
 			 console.dir(reviewInfo);
 			 
 			 
-			 reviewServiceImpl.createReview(reviewInfo);
+			 //reviewServiceImpl.createReview(reviewInfo);
 			 
 			 //reviewServiceImpl.uploadToStorage(file,newEmail);
 			 
