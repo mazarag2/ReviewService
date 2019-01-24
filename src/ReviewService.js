@@ -17,6 +17,11 @@ var ReviewService = {
 	    // Creates a client
 	    const storage = new Storage({
 			
+			
+			//need t chnage to aling with heroku config vals
+			GOOGLE_ACCOUNT_TYPE=service_account
+			GOOGLE_PRIVATE_KEY=XXX
+			GOOGLE_CLIENT_EMAIL=XXX
 			keyFilename : process.env.JSON_KEY,
 			projectID : process.env.PROJECT_ID
 			
