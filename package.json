@@ -39,5 +39,9 @@
   "bugs": {
     "url": "https://github.com/mazarag2/ReviewService/issues"
   },
-  "homepage": "https://github.com/mazarag2/ReviewService#readme"
+  "homepage": "https://github.com/mazarag2/ReviewService#readme",
+  "devDependencies": {
+    "coveralls": "^3.0.2",
+    "nyc": "^13.1.0"
+  }
 }
