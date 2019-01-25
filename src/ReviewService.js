@@ -53,20 +53,11 @@ var ReviewService = {
 		
 		s3 = new AWS.S3({apiVersion: '2006-03-01'});
 		
-		
-		/*
-		var params = { 
-		  Bucket: 'reviewservice-reviews',
-		  Delimiter: '',
-		  Prefix: userName + '/' + filename 
-		}
-		*/
 
 		var params = {Bucket: 'reviewservice-reviews', Key: userName + '/' + filename};
 		
 		
-		
-		
+	
 		return new Promise((resolve,reject) =>{
 		
 			s3.getObject(params,(err,data) => {
@@ -77,15 +68,6 @@ var ReviewService = {
 			});
 		
 		});
-		/*
-		return new Promise((resolve,reject) => {
-			
-			s3.listObjects(params, function (err, data) {
-			  if(err)throw err;
-			  resolve(data);
-			});
-		});	
-		*/
 		
 	},
 	createReview : function(reviewInfo){

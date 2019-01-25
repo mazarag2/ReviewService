@@ -77,6 +77,14 @@ describe('TestreviewService', function() {
 			assert.isNotEmpty(reviews)
 			
 		});
+		it('should return a single Review', async () => {
+			var key = '-LX1WAJ5MGJvqIu_XQ-v';
+			var review = await reviewService.getSingleReview(key,firebase);
+			console.log(review);
+			expect(review).to.be.an.instanceof(Object);
+			
+			
+		});
 	});
 	
 	describe('#checkS3BucketStorage',() => {
@@ -85,17 +93,19 @@ describe('TestreviewService', function() {
 		it('should upload to AWs S3 bucket',async () => {
 			
 			
-			var buffer = new Buffer('testing upload');
+			var buffer = new Buffer('blackOps 4 best game of all time dude');
 			
 			var email = 'mikez@email.com';
 			
 			var fileName = 'blackOps4Review.docx';
 			
+			/*
 			var storage = await reviewService.uploadToStorage(fileName,buffer,email,(lists) => {
 				
 				console.log(lists);
 				
 			});
+			*/
 			
 			
 		});
