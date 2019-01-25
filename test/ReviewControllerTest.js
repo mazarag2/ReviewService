@@ -90,25 +90,33 @@ describe('TestreviewService', function() {
 	describe('#checkS3BucketStorage',() => {
 		
 		
-		it('should upload to AWs S3 bucket',async () => {
+		it('should upload to AWS S3 bucket',async () => {
 			
 			
-			var buffer = new Buffer('blackOps 4 best game of all time dude');
+			var buffer = new Buffer('blackOps 4 is the best game of all time dude');
 			
-			var email = 'mikez@email.com';
+			var email = 'testuser';
 			
-			var fileName = 'blackOps4Review.docx';
+			var fileName = 'test.txt';
 			
-			/*
-			var storage = await reviewService.uploadToStorage(fileName,buffer,email,(lists) => {
-				
-				console.log(lists);
-				
-			});
-			*/
-			
+			var storageResponse = await reviewService.uploadToStorage(fileName,buffer,email);
+			expect(storageResponse).to.equal(true);
 			
 		});
+		
+		it('should read file from AWs s3 bucket ', async () => {
+			
+			
+			var email = 'testuser';
+			
+			var fileName = 'test.txt';
+						
+			var fileData = await reviewService.readFileFromStorage(email,fileName);
+
+			expect(fileData).to.equal('blackOps 4 is the best game of all time dude');
+			
+		});
+		
 		
 		
 	});

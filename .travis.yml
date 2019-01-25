@@ -10,7 +10,7 @@ install :
   - npm install
 script:
   - npm run test
-  - nyc mocha test/ReviewControllerTest.js --lines 85 --functions 85 --branches 85 && nyc report --reporter=text-lcov | coveralls
+  - nyc mocha test/ReviewControllerTest.js --exit --lines 85 --functions 85 --branches 85 && nyc report --reporter=text-lcov | coveralls
 after_success:
   - process.exit()
   - echo Build Succeded
