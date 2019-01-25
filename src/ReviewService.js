@@ -1,56 +1,92 @@
 var ReviewService = {
 	uploadToStorage : async function(fileName,buffer,email){
-		const BUCKET_NAME = 'entrypoint-9aa5e.appspot.com';
+
+	    var AWS = require('aws-sdk');
+		// Set the region 
+		AWS.config.update({region: 'us-west-1'});
+		AWS.config.update({
+			accessKeyId: process.env.aws_key_id,
+			secretAccessKey: process.env.aws_access_key
+		});
+		
+		s3 = new AWS.S3({apiVersion: '2006-03-01'});
+		
+		var bucketParams = {Bucket: 'reviewservice-reviews'};
+		
+		var uploadParams = {Bucket: 'reviewservice-reviews', Key: '', Body: ''};
 		var fs = require('fs');
 		
-		fs.writeFile('files/' + email + '-' + fileName,buffer.toString(),() =>{
+		const { Readable } = require('stream');
+		const stream = new Readable();
+		stream.push(buffer);
+		stream.push(null);
+		uploadParams.Body = stream;
+
+		var path = require('path');
+		uploadParams.Key = email + '/' + fileName;
+
+		// call S3 to retrieve upload file to specified bucket
+		return new Promise((resolve,reject) => {
+			
+			s3.upload (uploadParams, function (err, data) {
+			  if (err) {
+				console.log("Error", err);
+				reject(err);
+			  } if (data) {
+				console.log("Upload Success", data.Location);
+				resolve(true);
+			  }
+			});
+			
+		});
+	
+	},
+	readFileFromStorage : function(userName,filename) {
+		
+		var AWS = require('aws-sdk');
+		// Set the region 
+		AWS.config.update({region: 'us-west-1'});
+		AWS.config.update({
+			accessKeyId: process.env.aws_key_id,
+			secretAccessKey: process.env.aws_access_key
 		});
 		
+		s3 = new AWS.S3({apiVersion: '2006-03-01'});
 		
 		
-		//fs.createReadStream(file).pipe(fs.createWriteStream(email +'-'+ file));
-		const STORAGE_URL = 'https://www.googleapis.com/upload/storage/v1/b/entrypoint-9aa5e.appspot.com/o'; 	
-		  // [START storage_upload_file]
-		  // Imports the Google Cloud client library
-	    const {Storage} = require('@google-cloud/storage');
+		/*
+		var params = { 
+		  Bucket: 'reviewservice-reviews',
+		  Delimiter: '',
+		  Prefix: userName + '/' + filename 
+		}
+		*/
 
-	    // Creates a client
-	    const storage = new Storage({
-			
-			
-			//need t chnage to aling with heroku config vals
-			GOOGLE_ACCOUNT_TYPE=service_account
-			GOOGLE_PRIVATE_KEY=XXX
-			GOOGLE_CLIENT_EMAIL=XXX
-			keyFilename : process.env.JSON_KEY,
-			projectID : process.env.PROJECT_ID
-			
+		var params = {Bucket: 'reviewservice-reviews', Key: userName + '/' + filename};
+		
+		
+		
+		
+		return new Promise((resolve,reject) =>{
+		
+			s3.getObject(params,(err,data) => {
+				
+				if(err) reject(err);
+				resolve(data.Body.toString());
+		
+			});
+		
 		});
+		/*
+		return new Promise((resolve,reject) => {
+			
+			s3.listObjects(params, function (err, data) {
+			  if(err)throw err;
+			  resolve(data);
+			});
+		});	
+		*/
 		
-	  /**
-	   * TODO(developer): Uncomment the following lines before running the sample.
-	   */
-	  // const bucketName = 'Name of a bucket, e.g. my-bucket';
-	  // const filename = 'Local file to upload, e.g. ./local/path/to/file.txt';
-
-	  // Uploads a local file to the bucket
-	  try {
-	    await storage.bucket(BUCKET_NAME).upload('files/' + email +'-'+ fileName, {
-		  // Support for HTTP requests made with `Accept-Encoding: gzip`
-		  gzip: true,
-		  metadata: {
-		  // Enable long-lived HTTP caching headers
-		  // Use only if the contents of the file will never change
-		  // (If the contents will change, use cacheControl: 'no-cache')
-		    cacheControl: 'no-cache',
-		  },
-	    });
-	  }
-	  catch(ex){
-		console.log(ex);
-	  }
-	  fs.unlinkSync('files/' + email +'-'+ fileName);
-	  console.log('succesfully uploaded');
 	},
 	createReview : function(reviewInfo){
 		
@@ -76,6 +112,7 @@ var ReviewService = {
 		
 		newReviewByDateRef.set({
 			
+			userName : reviewInfo.email,
 			DatePosted : firebase.database.ServerValue.TIMESTAMP,
 			author : reviewInfo.author,
 			reviewSummary : reviewInfo.reviewSummary,
@@ -94,6 +131,17 @@ var ReviewService = {
 		var newEmail = email.substring(0,pos); 
 		
 		return newEmail;
+	},
+	getSingleReview: function(key,firebase){
+		
+		//var reviewRef = firebase.database().ref("ReviewsByDate/" + key);
+		
+		return firebase.database().ref('/ReviewsByDate/' + key).once('value').then(function(snapshot) {
+			return snapshot.val();
+		});
+		
+		
+		
 	},
 	getLatestReviews: function(firebase){
 			

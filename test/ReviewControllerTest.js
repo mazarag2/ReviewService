@@ -54,6 +54,7 @@ describe('TestreviewService', function() {
 				var result = reviewAdapter.returnReviewsforView(reviews);
 			
 				expect(result).to.be.an.instanceof(Array);
+				expect(result[0]).to.have.property('key');
 				expect(result[0]).to.have.property('DatePosted');
 				expect(result[0]).to.have.property('author');
 				expect(result[0]).to.have.property('reviewFileName');
@@ -70,12 +71,36 @@ describe('TestreviewService', function() {
 			
 			var reviews = reviewService.getLatestReviews(firebase);
 			done();
-			console.log(reviews);
+			//console.log(reviews);
 			
 			assert.isNotNull(reviews);
 			assert.isNotEmpty(reviews)
 			
 		});
+	});
+	
+	describe('#checkS3BucketStorage',() => {
+		
+		
+		it('should upload to AWs S3 bucket',async () => {
+			
+			
+			var buffer = new Buffer('testing upload');
+			
+			var email = 'mikez@email.com';
+			
+			var fileName = 'blackOps4Review.docx';
+			
+			var storage = await reviewService.uploadToStorage(fileName,buffer,email,(lists) => {
+				
+				console.log(lists);
+				
+			});
+			
+			
+		});
+		
+		
 	});
 	
 });
