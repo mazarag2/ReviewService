@@ -14,6 +14,7 @@ var ReviewAdapter = {
 			
 			viewReviews.push({
 				
+				"key" : currentKey,
 				"DatePosted" : date.toDateString(),
 				"author" : currentReviewData.author,
 				"reviewSummary" : currentReviewData.reviewSummary,	

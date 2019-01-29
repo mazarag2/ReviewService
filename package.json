@@ -13,7 +13,9 @@
   },
   "dependencies": {
     "@google-cloud/storage": "^2.3.1",
+    "aws-sdk": "^2.393.0",
     "axios": "^0.18.0",
+    "body-parser": "^1.18.3",
     "chai": "^4.2.0",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.4",
@@ -37,5 +39,9 @@
   "bugs": {
     "url": "https://github.com/mazarag2/ReviewService/issues"
   },
-  "homepage": "https://github.com/mazarag2/ReviewService#readme"
+  "homepage": "https://github.com/mazarag2/ReviewService#readme",
+  "devDependencies": {
+    "coveralls": "^3.0.2",
+    "nyc": "^13.1.0"
+  }
 }

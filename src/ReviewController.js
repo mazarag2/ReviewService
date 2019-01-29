@@ -45,62 +45,6 @@ app.use(bodyParser.urlencoded({
  */
 app.use(bodyParser.json());
 
-
-router.get('/StorageBuckets',async function(req,res){
-	
-	/*
-	const {Storage} = require('@google-cloud/storage');
-
-	// Instantiates a client. If you don't specify credentials when constructing
-	// the client, the client library will look for credentials in the
-	// environment.
-	const storage = new Storage();
-
-	// Makes an authenticated API request.
-	storage
-	  .getBuckets()
-	  .then((results) => {
-		const buckets = results[0];
-
-		console.log('Buckets:');
-		buckets.forEach((bucket) => {
-		  console.log(bucket.name);
-		  res.send(bucket.name);
-		});
-	  })
-	  .catch((err) => {
-		console.error('ERROR:', err);
-	  });
-	  */
-	  const {Storage} = require('@google-cloud/storage');
-      const BUCKET_NAME = 'entrypoint-9aa5e.appspot.com';
-		  // Creates a client
-	  const storage = new Storage();
-
-	  /**
-	   * TODO(developer): Uncomment the following lines before running the sample.
-	   */
-	  // const bucketName = 'Name of a bucket, e.g. my-bucket';
-	  // const filename = 'Local file to upload, e.g. ./local/path/to/file.txt';
-
-	  // Uploads a local file to the bucket
-	  await storage.bucket(BUCKET_NAME).upload(file, {
-		// Support for HTTP requests made with `Accept-Encoding: gzip`
-		gzip: true,
-		metadata: {
-		  // Enable long-lived HTTP caching headers
-		  // Use only if the contents of the file will never change
-		  // (If the contents will change, use cacheControl: 'no-cache')
-		  cacheControl: 'no-cache',
-		},
-	  });
-
-	  console.log('succesfully uploaded');
-	
-	
-	
-});
-
 router.get('/clearCookies',function(req,res){
 	
 	var Email = Object.keys(req.cookies)[0];
@@ -138,18 +82,25 @@ var checkForToken = function(req,res,next){
 }
 
 
-
-router.get('/reviews',function(req,res){
+router.get('/getReview',async (req,res) => {
 	
 	
+	var firebase = require('firebase');
+	var key = req.query.key;
+	var review = await reviewServiceImpl.getSingleReview(key,firebase);
+	console.dir(review);
+	var userName = review.userName;
+	var fileName = review.reviewFileName;
 	
-	
+	var file = await reviewServiceImpl.readFileFromStorage(userName,fileName);
+	console.log(file);
+	res.send(file);
 	
 	
 	
 });
 
-router.get('/review',checkForToken,function(req,res){
+router.get('/CreateReview',checkForToken,function(req,res){
 
 		
 	var url = generateAuthUrl();
@@ -171,7 +122,7 @@ function generateAuthUrl(){
 	return url;
 }	
 
-router.post('/reviews/:email',upload.single('uploadFile'),function(req,res){
+router.post('/reviews/:email',upload.single('uploadFile'),async function(req,res){
 	console.log(req.file);
 	var buffer = req.file.buffer.toString();
 	var email = req.params.email;
@@ -200,10 +151,16 @@ router.post('/reviews/:email',upload.single('uploadFile'),function(req,res){
 	 }
  
 	console.dir(reviewInfo);
-	 
-	reviewServiceImpl.createReview(reviewInfo,buffer);
-	 
-	reviewServiceImpl.uploadToStorage(fileName,buffer,newEmail);	
+
+	try {	
+	
+		reviewServiceImpl.createReview(reviewInfo,buffer);
+		var result = await reviewServiceImpl.uploadToStorage(fileName,buffer,newEmail);	
+	
+	}
+	catch(ex){	
+		res.status(500).send({ url: req.originalUrl + 'Unable to write to S3'});	
+	}
 	var url = '';
 	res.render('CreateReview',{google_auth_url : url,fileUploaded : true,authenticated : true,email : email});
 });

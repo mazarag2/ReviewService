@@ -60,7 +60,7 @@ head
                p.card-text
                  | #{review.reviewSummary}
                |               
-               a.btn.btn-primary(href='#') Read More &rarr;
+               a.btn.btn-primary(href='/getReview?key=' + review.key) Read More &rarr;
              |             
              .card-footer.text-muted
                | Posted on #{review.DatePosted} by #{review.author}
@@ -89,7 +89,7 @@ head
             h5.card-header Side Widget
             |             
             .card-body
-              a(href='/review') Create or Upload your Review !
+              a(href='/CreateReview') Create or Upload your Review !
           .card.my-4
             h5.card-header Categories
             |             

@@ -54,6 +54,7 @@ describe('TestreviewService', function() {
 				var result = reviewAdapter.returnReviewsforView(reviews);
 			
 				expect(result).to.be.an.instanceof(Array);
+				expect(result[0]).to.have.property('key');
 				expect(result[0]).to.have.property('DatePosted');
 				expect(result[0]).to.have.property('author');
 				expect(result[0]).to.have.property('reviewFileName');
@@ -70,12 +71,54 @@ describe('TestreviewService', function() {
 			
 			var reviews = reviewService.getLatestReviews(firebase);
 			done();
-			console.log(reviews);
+			//console.log(reviews);
 			
 			assert.isNotNull(reviews);
 			assert.isNotEmpty(reviews)
 			
 		});
+		it('should return a single Review', async () => {
+			var key = '-LX1WAJ5MGJvqIu_XQ-v';
+			var review = await reviewService.getSingleReview(key,firebase);
+			console.log(review);
+			expect(review).to.be.an.instanceof(Object);
+			
+			
+		});
+	});
+	
+	describe('#checkS3BucketStorage',() => {
+		
+		
+		it('should upload to AWS S3 bucket',async () => {
+			
+			
+			var buffer = new Buffer('blackOps 4 is the best game of all time dude');
+			
+			var email = 'testuser';
+			
+			var fileName = 'test.txt';
+			
+			var storageResponse = await reviewService.uploadToStorage(fileName,buffer,email);
+			expect(storageResponse).to.equal(true);
+			
+		});
+		
+		it('should read file from AWs s3 bucket ', async () => {
+			
+			
+			var email = 'testuser';
+			
+			var fileName = 'test.txt';
+						
+			var fileData = await reviewService.readFileFromStorage(email,fileName);
+
+			expect(fileData).to.equal('blackOps 4 is the best game of all time dude');
+			
+		});
+		
+		
+		
 	});
 	
 });
