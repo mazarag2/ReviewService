@@ -92,14 +92,17 @@ router.get('/getReview',async (req,res) => {
 	var firebase = require('firebase');
 	var key = req.query.key;
 	var review = await reviewServiceImpl.getSingleReview(key,firebase);
+	
+	var date = new Date(review.DatePosted);
+	review.DatePosted = date.toDateString();
 	console.dir(review);
 	var userName = review.userName;
 	var fileName = review.reviewFileName;
 	
 	var file = await reviewServiceImpl.readFileFromStorage(userName,fileName);
 	console.log(file);
-	res.send(file);
-	
+	//res.send(file);
+	res.render('review',{review : review,content : file});
 	
 	
 });
