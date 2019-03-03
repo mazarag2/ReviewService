@@ -98,14 +98,23 @@ router.get('/getReview',async (req,res) => {
 	console.dir(review);
 	var userName = review.userName;
 	var fileName = review.reviewFileName;
+	var thumbNailName = review.thumbNailFileName;
+	var Review = await reviewServiceImpl.readFileFromStorage(userName,fileName,thumbNailName);
+	console.log(Review.reviewText);
 	
-	var file = await reviewServiceImpl.readFileFromStorage(userName,fileName);
-	console.log(file);
+	var thumbNailURL = Review.reviewThumbNail;
+	console.log(thumbNailURL);
 	//res.send(file);
-	res.render('review',{review : review,content : file});
+	res.render('review',{review : review,content : Review.reviewText,thumbNail : thumbNailURL});
 	
 	
 });
+
+function encode(data)
+{
+    var str = data.reduce(function(a,b){ return a+String.fromCharCode(b) },'');
+    return btoa(str).replace(/.{76}(?=.)/g,'$&\n');
+}
 
 router.get('/CreateReview',checkForToken,function(req,res){
 
@@ -129,9 +138,10 @@ function generateAuthUrl(){
 	return url;
 }	
 
-router.post('/reviews/:email',upload.single('uploadFile'),async function(req,res){
-	console.log(req.file);
-	var buffer = req.file.buffer.toString();
+router.post('/reviews/:email',upload.any(),async function(req,res){
+	console.log(req.files);
+	var reviewBuffer = req.files[0].buffer.toString();
+    var thumbNailBuffer = req.files[1].buffer;
 	var email = req.params.email;
 	console.log(req.params);
 	console.log(email);
@@ -141,8 +151,10 @@ router.post('/reviews/:email',upload.single('uploadFile'),async function(req,res
 	console.log(token);
 	console.log(req.cookies['name']);
 	var fullname = req.cookies['name']; 
-	
-	var fileName = req.file.originalname;	
+	console.log(req.file);
+	//var fileName = req.file.originalname;
+	var fileName = req.files[0].originalname;
+	var thumbNailName = req.files[1].originalname; 
 	var reviewName = req.body.reviewName;
 	var reviewSubText = req.body.reviewSubText;
 	var newEmail = reviewServiceImpl.getEmailEscapedfromDomain(email);
@@ -154,21 +166,24 @@ router.post('/reviews/:email',upload.single('uploadFile'),async function(req,res
 		 reviewSummary : reviewSubText,
 		 reviewName : reviewName,	 
 		 DatePosted : date,
-		 reviewFileName : fileName
+		 reviewFileName : fileName,
+		 thumbNailFileName : thumbNailName
 	 }
  
 	console.dir(reviewInfo);
-
+	
 	try {	
 	
-		reviewServiceImpl.createReview(reviewInfo,buffer);
-		var result = await reviewServiceImpl.uploadToStorage(fileName,buffer,newEmail);	
-	
+		reviewServiceImpl.createReview(reviewInfo);
+		var result = await reviewServiceImpl.uploadToStorage(fileName,reviewBuffer,newEmail,thumbNailBuffer,thumbNailName);	
+		var url = '';
+		res.render('CreateReview',{google_auth_url : url,fileUploaded : true,authenticated : true,email : email});
 	}
-	catch(ex){	
+	catch(ex){
+		console.log(ex);
 		res.status(500).send({ url: req.originalUrl + 'Unable to write to S3'});	
 	}
-	var url = '';
-	res.render('CreateReview',{google_auth_url : url,fileUploaded : true,authenticated : true,email : email});
+	
+	
 });
 module.exports = router
