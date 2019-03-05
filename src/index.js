@@ -85,6 +85,9 @@ app.get('/home',async function(req,res){
 	var local_id = process.env.Client_id;
 	var objReviews = await reviewServiceImpl.getLatestReviews(firebase);
 	var Reviews = reviewAdapter.returnReviewsforView(objReviews);
+	var thumbNailFiles = getThumbNailFromReviews(Reviews);
+	
+	
 	console.log(Reviews);
 	res.render('home',{LOCAL_CLIENT_ID : local_id,reviews : Reviews});
 	
@@ -267,6 +270,26 @@ app.post('/authenticate',cors(),function(req,res){
 	});
 	
 });
+
+function getThumbNailFromReviews(Reviews){
+	
+	var ThumbNails = [];
+	for(var x = 0 ; x <= Reviews.length - 1 ; x++){
+		
+		var thumbNailParam = {username : '', thumbNail : ''};
+		
+		thumbNailParam.username = Reviews[x].userName;
+		thumbNailParam.thumbNail = Reviews[x].thumbNailFileName;
+		
+		ThumbNails.push(thumbNailParam);
+		
+	}
+	console.log(ThumbNails);
+	return ThumbNails;
+	
+	
+	
+}
 function getOAuthClient () {
     return new OAuth2(process.env.Client_id ,  process.env.Client_secret, "http://localhost:8081/home");
 }

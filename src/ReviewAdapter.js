@@ -19,12 +19,31 @@ var ReviewAdapter = {
 				"author" : currentReviewData.author,
 				"reviewSummary" : currentReviewData.reviewSummary,	
 				"reviewFileName" : currentReviewData.reviewFileName,
-				"reviewName" : currentReviewData.reviewName
+				"reviewName" : currentReviewData.reviewName,
+				"thumbNailFileName" : currentReviewData.thumbNailFileName
 				
 			});
 		}
 		console.log(viewReviews);
 		return viewReviews;
+	},
+	getListofPicLinksforReviews : function(Reviews){
+		
+	
+		var ThumbNails = [];
+		for(var x = 0 ; x <= Reviews.length - 1 ; x++){
+			
+			var thumbNailParam = {};
+			
+			thumbNailParam.username = Reviews[x].userName;
+			thumbNailParam.thumbNail = Reviews[x].thumbNailFileName;
+			
+			ThumbNails.push(thumbNailParam);
+			
+		}
+		return ThumbNails;
+
+		
 	}
 
 }

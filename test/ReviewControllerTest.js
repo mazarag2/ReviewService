@@ -86,20 +86,49 @@ describe('TestreviewService', function() {
 			
 		});
 	});
-	
+	describe('#CheckAdapterFunctions',() => {
+		
+		it('should return a new object ',(done) => {
+			
+			var reviews = [
+				{ key: '-L_0AsncgFEYnMHimge6',
+				DatePosted: 'Sat Mar 02 2019',
+				author: 'Mike Zaragoza',
+				reviewSummary: 'testing this with a png',
+				reviewFileName: 'backup.txt',
+				reviewName: 'MeReview',
+				thumbNailFileName: 'me.png',
+				userName : 'mazarag2' },
+			  { key: '-L_0CV_mySav-TeUeyDt',
+				DatePosted: 'Sat Mar 02 2019',
+				author: 'Mike Zaragoza',
+				reviewSummary: 'testagain32',
+				reviewFileName: 'link to laptop fix.txt',
+				reviewName: 'testagain32',
+				thumbNailFileName: 'help.png' ,
+				userName : 'boblow3'},]
+		
+
+			var newReviews = reviewAdapter.getListofPicLinksforReviews(reviews);
+			done();
+			expect(newReviews).to.have.lengthOf(reviews.length);			
+			assert.include(newReviews[0], { username: 'mazarag2',thumbNail : 'me.png' }, 'object contains property');
+
+		});
+	});
 	describe('#checkS3BucketStorage',() => {
 		
 		
 		it('should upload to AWS S3 bucket',async () => {
 			
-			
+			var fs = require('fs');
 			var buffer = new Buffer('blackOps 4 is the best game of all time dude');
-			
+			var imgBuffer = fs.readFileSync('entrypoint.png', 'base64');
 			var email = 'testuser';
 			
 			var fileName = 'test.txt';
-			
-			var storageResponse = await reviewService.uploadToStorage(fileName,buffer,email);
+			//fileName,buffer,email,thumbNailBuffer,thumbNailName
+			var storageResponse = await reviewService.uploadToStorage(fileName,buffer,email,imgBuffer,'entrypoint.png');
 			expect(storageResponse).to.equal(true);
 			
 		});
@@ -111,13 +140,11 @@ describe('TestreviewService', function() {
 			
 			var fileName = 'test.txt';
 						
-			var fileData = await reviewService.readFileFromStorage(email,fileName);
-
-			expect(fileData).to.equal('blackOps 4 is the best game of all time dude');
+			var fileData = await reviewService.readFileFromStorage(email,fileName,'entrypoint.png');
 			
-		});
-		
-		
+			expect(fileData.reviewText).to.equal('blackOps 4 is the best game of all time dude');
+			
+		});	
 		
 	});
 	
