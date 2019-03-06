@@ -37,6 +37,7 @@ var ReviewAdapter = {
 			
 			thumbNailParam.username = Reviews[x].userName;
 			thumbNailParam.thumbNail = Reviews[x].thumbNailFileName;
+			thumbNailParam.key = Reviews[x].key;
 			
 			ThumbNails.push(thumbNailParam);
 			

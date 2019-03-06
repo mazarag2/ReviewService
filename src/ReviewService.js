@@ -123,6 +123,35 @@ var ReviewService = {
 		});
 		
 	},
+	getLinksFromS3 : function(Reviews){
+
+		var AWS = require('aws-sdk');
+		// Set the region 
+		AWS.config.update({region: 'us-west-1'});
+		AWS.config.update({
+			accessKeyId: process.env.aws_key_id,
+			secretAccessKey: process.env.aws_access_key
+		});
+		
+		s3 = new AWS.S3({apiVersion: '2006-03-01'});
+
+		return new Promise((resolve,reject) => {
+
+			var newReviews = [];
+			for(var x = 0 ; x <= Reviews.length -1 ; x++){
+
+				var ThumbNailParams = {Bucket: 'reviewservice-reviews', Key: Reviews[x].username + '/' + Reviews[x].thumbNailName}
+				var url = s3.getSignedUrl('getObject', ThumbNailParams);
+				var Review = {};
+				Review.reviewThumbNail = url;
+				Review.key = Reviews[x].key;
+				newReviews.push(Review);
+			}
+			console.log(newReviews); 
+			resolve(newReviews);
+		});
+
+	},
 	createReview : function(reviewInfo){
 		
 		var firebase = require("firebase");
@@ -196,23 +225,6 @@ var ReviewService = {
 			return snapshot.val();
 		});
 
-		
-	}
-	,
-	convertDocxTOHTML: function(buffer){
-		
-		var mammoth = require("mammoth");
- 
-		return new Promise((resolve,reject) => {
-			mammoth.convertToHtml({buffer: buffer})
-			.then(function(result){
-				console.log(result);
-				var html = result.value; // The generated HTML
-				resolve(html);
-				//var messages = result.messages; // Any messages, such as warnings during conversion
-			})
-			.done()
-		},buffer);
 		
 	}
 }

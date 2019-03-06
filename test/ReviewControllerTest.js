@@ -88,7 +88,7 @@ describe('TestreviewService', function() {
 	});
 	describe('#CheckAdapterFunctions',() => {
 		
-		it('should return a new object ',(done) => {
+		it('should return a filtered view containing only name and thumbnail ',(done) => {
 			
 			var reviews = [
 				{ key: '-L_0AsncgFEYnMHimge6',
@@ -112,7 +112,7 @@ describe('TestreviewService', function() {
 			var newReviews = reviewAdapter.getListofPicLinksforReviews(reviews);
 			done();
 			expect(newReviews).to.have.lengthOf(reviews.length);			
-			assert.include(newReviews[0], { username: 'mazarag2',thumbNail : 'me.png' }, 'object contains property');
+			assert.include(newReviews[0], { username: 'mazarag2',thumbNail : 'me.png' ,key : '-L_0AsncgFEYnMHimge6'}, 'object contains property');
 
 		});
 	});
@@ -145,6 +145,16 @@ describe('TestreviewService', function() {
 			expect(fileData.reviewText).to.equal('blackOps 4 is the best game of all time dude');
 			
 		});	
+
+		it('should return a list of singed urls given a list of Reviews',async () => {
+
+			var Reviews = [{'username' : 'mazarag2','thumbNailName' : 'help.png','key' : '-L_0Fac6GOzK1qQD2gL_'},
+			{'username' : 'testuser','thumbNailName' : 'entrypoint.png','key' : '-LYdkPyjjDxOnIHBsg_3'}];
+			var reviews = await  reviewService.getLinksFromS3(Reviews);
+			expect(reviews).to.be.an.instanceof(Array);
+			expect(reviews).to.have.lengthOf(Reviews.length);
+
+		});
 		
 	});
 	
