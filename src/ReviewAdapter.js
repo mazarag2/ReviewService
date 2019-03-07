@@ -20,6 +20,7 @@ var ReviewAdapter = {
 				"reviewSummary" : currentReviewData.reviewSummary,	
 				"reviewFileName" : currentReviewData.reviewFileName,
 				"reviewName" : currentReviewData.reviewName,
+				"userName" : currentReviewData.userName,
 				"thumbNailFileName" : currentReviewData.thumbNailFileName
 				
 			});

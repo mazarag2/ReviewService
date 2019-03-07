@@ -135,21 +135,18 @@ var ReviewService = {
 		
 		s3 = new AWS.S3({apiVersion: '2006-03-01'});
 
-		return new Promise((resolve,reject) => {
 
-			var newReviews = [];
-			for(var x = 0 ; x <= Reviews.length -1 ; x++){
+		var newReviews = [];
+		for(var x = 0 ; x <= Reviews.length -1 ; x++){
 
-				var ThumbNailParams = {Bucket: 'reviewservice-reviews', Key: Reviews[x].username + '/' + Reviews[x].thumbNailName}
-				var url = s3.getSignedUrl('getObject', ThumbNailParams);
-				var Review = {};
-				Review.reviewThumbNail = url;
-				Review.key = Reviews[x].key;
-				newReviews.push(Review);
-			}
-			console.log(newReviews); 
-			resolve(newReviews);
-		});
+			var ThumbNailParams = {Bucket: 'reviewservice-reviews', Key: Reviews[x].userName + '/' + Reviews[x].thumbNailFileName}
+			var url = s3.getSignedUrl('getObject', ThumbNailParams);
+			Reviews[x]["thumbNailUrl"] = url;
+
+		}
+		console.log(newReviews); 
+
+		return Reviews;
 
 	},
 	createReview : function(reviewInfo){

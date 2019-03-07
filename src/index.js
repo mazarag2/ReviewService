@@ -85,11 +85,8 @@ app.get('/home',async function(req,res){
 	var local_id = process.env.Client_id;
 	var objReviews = await reviewServiceImpl.getLatestReviews(firebase);
 	var Reviews = reviewAdapter.returnReviewsforView(objReviews);
-	var thumbNailFiles = reviewAdapter.getListofPicLinksforReviews(Reviews);
-
-	
-	
-	
+	//var thumbNailFiles = reviewAdapter.getListofPicLinksforReviews(Reviews);
+	Reviews = reviewServiceImpl.getLinksFromS3(Reviews);
 	console.log(Reviews);
 	res.render('home',{LOCAL_CLIENT_ID : local_id,reviews : Reviews});
 	

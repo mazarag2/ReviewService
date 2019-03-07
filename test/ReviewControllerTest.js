@@ -146,11 +146,12 @@ describe('TestreviewService', function() {
 			
 		});	
 
-		it('should return a list of singed urls given a list of Reviews',async () => {
+		it('should return a list of singed urls given a list of Reviews', () => {
 
 			var Reviews = [{'username' : 'mazarag2','thumbNailName' : 'help.png','key' : '-L_0Fac6GOzK1qQD2gL_'},
 			{'username' : 'testuser','thumbNailName' : 'entrypoint.png','key' : '-LYdkPyjjDxOnIHBsg_3'}];
-			var reviews = await  reviewService.getLinksFromS3(Reviews);
+			var reviews = reviewService.getLinksFromS3(Reviews);
+			console.log(reviews);
 			expect(reviews).to.be.an.instanceof(Array);
 			expect(reviews).to.have.lengthOf(Reviews.length);
 
