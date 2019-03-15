@@ -4,6 +4,7 @@ const qstring = require('querystring');
 const url = require('url');
 const index = require('./index');
 const reviewServiceImpl = require('./ReviewService');
+const reviewStorageServiceImpl = require('./ReviewStorageService');
 const {google} = require('googleapis');
 var multer = require('multer');
 const upload = multer();
@@ -99,7 +100,7 @@ router.get('/getReview',async (req,res) => {
 	var userName = review.userName;
 	var fileName = review.reviewFileName;
 	var thumbNailName = review.thumbNailFileName;
-	var Review = await reviewServiceImpl.readFileFromStorage(userName,fileName,thumbNailName);
+	var Review = await reviewStorageServiceImpl.readFileFromStorage(userName,fileName,thumbNailName);
 	console.log(Review.reviewText);
 	
 	var thumbNailURL = Review.reviewThumbNail;
@@ -121,7 +122,7 @@ router.get('/CreateReview',checkForToken,function(req,res){
 
 function generateAuthUrl(){
 
-	var scopes = ['email','profile','https://www.googleapis.com/auth/drive'];
+	var scopes = ['email','profile'];
 	
 	const url = oauth2Client.generateAuthUrl({
 	  // 'online' (default) or 'offline' (gets refresh_token)
@@ -170,7 +171,7 @@ router.post('/reviews/:email',upload.any(),async function(req,res){
 	try {	
 	
 		reviewServiceImpl.createReview(reviewInfo);
-		var result = await reviewServiceImpl.uploadToStorage(fileName,reviewBuffer,newEmail,thumbNailBuffer,thumbNailName);	
+		var result = await reviewStorageServiceImpl.uploadToStorage(fileName,reviewBuffer,newEmail,thumbNailBuffer,thumbNailName);	
 		var url = '';
 		res.render('CreateReview',{google_auth_url : url,fileUploaded : true,authenticated : true,email : email});
 	}

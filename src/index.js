@@ -27,6 +27,7 @@ app.use(cors());
 var fs = require('fs');
 const dotenv = require('dotenv').config();
 const reviewServiceImpl = require('./ReviewService');
+const reviewStorageServiceImpl = require('./ReviewStorageService');
 const reviewAdapter = require('./ReviewAdapter');
 
 var firebase = require("firebase");
@@ -86,7 +87,7 @@ app.get('/home',async function(req,res){
 	var objReviews = await reviewServiceImpl.getLatestReviews(firebase);
 	var Reviews = reviewAdapter.returnReviewsforView(objReviews);
 	//var thumbNailFiles = reviewAdapter.getListofPicLinksforReviews(Reviews);
-	Reviews = reviewServiceImpl.getLinksFromS3(Reviews);
+	Reviews = reviewStorageServiceImpl.getLinksFromS3(Reviews);
 	console.log(Reviews);
 	res.render('home',{LOCAL_CLIENT_ID : local_id,reviews : Reviews});
 	
