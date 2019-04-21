@@ -11,7 +11,7 @@ var cookieParser = require('cookie-parser');
 app.use(cookieParser());
 app.use(session({secret : "secret",cookie : { expires: 100000 }}));
 const jade = require('pug');
-var port = process.env.PORT || 8080;
+var port = process.env.PORT || 8081;
 const qstring = require('querystring');
 app.listen(port);
 console.log("server started "+port);
@@ -81,7 +81,7 @@ const oauth2Client = new google.auth.OAuth2(
 const index = require("./ReviewController");
 app.use('/',index);
 
-app.get('/home',async function(req,res){
+app.get('/reviews',async function(req,res){
 	
 	var local_id = process.env.Client_id;
 	var objReviews = await reviewServiceImpl.getLatestReviews(firebase);
@@ -89,7 +89,8 @@ app.get('/home',async function(req,res){
 	//var thumbNailFiles = reviewAdapter.getListofPicLinksforReviews(Reviews);
 	Reviews = reviewStorageServiceImpl.getLinksFromS3(Reviews);
 	console.log(Reviews);
-	res.render('home',{LOCAL_CLIENT_ID : local_id,reviews : Reviews});
+	res.send(Reviews);
+	//res.render('home',{LOCAL_CLIENT_ID : local_id,reviews : Reviews});
 	
 });
 
