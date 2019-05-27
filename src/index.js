@@ -89,8 +89,20 @@ app.get('/reviews',async function(req,res){
 	//var thumbNailFiles = reviewAdapter.getListofPicLinksforReviews(Reviews);
 	Reviews = reviewStorageServiceImpl.getLinksFromS3(Reviews);
 	console.log(Reviews);
+	//res.send(Reviews);
+	res.render('home',{LOCAL_CLIENT_ID : local_id,reviews : Reviews});
+	
+});
+
+app.get('/reviewsV2',async function(req,res){
+	
+	var local_id = process.env.Client_id;
+	var objReviews = await reviewServiceImpl.getLatestReviews(firebase);
+	var Reviews = reviewAdapter.returnReviewsforView(objReviews);
+	//var thumbNailFiles = reviewAdapter.getListofPicLinksforReviews(Reviews);
+	Reviews = reviewStorageServiceImpl.getLinksFromS3(Reviews);
+	console.log(Reviews);
 	res.send(Reviews);
-	//res.render('home',{LOCAL_CLIENT_ID : local_id,reviews : Reviews});
 	
 });
 

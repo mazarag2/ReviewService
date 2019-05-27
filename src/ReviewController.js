@@ -111,6 +111,32 @@ router.get('/getReview',async (req,res) => {
 	
 });
 
+router.get('/reviews/:key',async (req,res) => {
+	
+	var firebase = require('firebase');
+	var key = req.params.key;
+	var review = await reviewServiceImpl.getSingleReview(key,firebase);
+	
+	var date = new Date(review.DatePosted);
+	review.DatePosted = date.toDateString();
+	console.dir(review);
+	var userName = review.userName;
+	var fileName = review.reviewFileName;
+	var thumbNailName = review.thumbNailFileName;
+	var Review = await reviewStorageServiceImpl.readFileFromStorage(userName,fileName,thumbNailName);
+	console.log(Review.reviewText);
+	
+	var thumbNailURL = Review.reviewThumbNail;
+	console.log(thumbNailURL);
+	//res.send(file);
+	
+	res.send(Review);
+	//res.render('review',{review : review,content : Review.reviewText,thumbNail : thumbNailURL});
+	
+	
+	
+});
+
 
 router.get('/CreateReview',checkForToken,function(req,res){
 
