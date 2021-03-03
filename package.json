@@ -36,7 +36,7 @@
     "multiparty": "^4.2.1",
     "node-cache": "^4.2.0",
     "nodemon": "^1.18.10",
-    "pug": "^2.0.3",
+    "pug": "^3.0.1",
     "puppeteer": "^1.9.0"
   },
   "author": "Mike Zaragoza",
